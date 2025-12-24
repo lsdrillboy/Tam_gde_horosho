@@ -1,0 +1,75 @@
+{
+  "price": {
+    "mode": "price",
+    "currency": "RUB"
+  },
+  "foodTypes": {
+    "full": "Комплекс",
+    "twoMeals": "2-разовое",
+    "request": "по запросу"
+  },
+  "tiers": [
+    {
+      "minGuests": 7,
+      "label": "От 7 человек",
+      "rates": {
+        "full": 3500,
+        "twoMeals": 2500
+      }
+    },
+    {
+      "minGuests": 15,
+      "label": "От 15 человек",
+      "rates": {
+        "full": 3300,
+        "twoMeals": 2300
+      }
+    },
+    {
+      "minGuests": 30,
+      "label": "От 30 человек",
+      "rates": {
+        "full": 3100,
+        "twoMeals": 2100
+      }
+    },
+    {
+      "minGuests": 40,
+      "label": "От 40 человек",
+      "rates": {
+        "full": 3000,
+        "twoMeals": 2000
+      }
+    }
+  ],
+  "addons": [
+    {
+      "id": "boxed-lunch",
+      "label": "Обед с собой",
+      "price": 1350,
+      "unit": "за порцию"
+    },
+    {
+      "id": "coffee-break",
+      "label": "Кофе-брейк",
+      "priceFrom": 500,
+      "unit": "за человека"
+    },
+    {
+      "id": "cake",
+      "label": "Торт",
+      "price": 3000,
+      "unit": "за кг"
+    }
+  ],
+  "autoPricing": {
+    "enabled": true,
+    "strategy": "highest_min_guests_lte",
+    "minGuests": 7,
+    "outputs": [
+      "per_person_per_day",
+      "per_group_per_day",
+      "per_period"
+    ]
+  }
+}

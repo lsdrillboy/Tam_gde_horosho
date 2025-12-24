@@ -1,0 +1,63 @@
+{
+  "sections": [
+    {
+      "id": "accommodation",
+      "label": "🏡 Размещение",
+      "route": "/accommodation"
+    },
+    {
+      "id": "practices",
+      "label": "🌿 Практики и услуги",
+      "route": "/practices"
+    },
+    {
+      "id": "calendar",
+      "label": "📅 Календарь дат",
+      "route": "/calendar"
+    },
+    {
+      "id": "kitchen",
+      "label": "🍲 Кухня и питание",
+      "route": "/kitchen"
+    },
+    {
+      "id": "gallery",
+      "label": "🖼 Галерея",
+      "route": "/gallery"
+    },
+    {
+      "id": "shop",
+      "label": "🛍 Магазин (скоро)",
+      "route": "/shop"
+    },
+    {
+      "id": "contact",
+      "label": "✉️ Связаться / Заявка",
+      "route": "/contact"
+    }
+  ],
+  "cta": [
+    {
+      "id": "cta_accommodation",
+      "label": "Запросить размещение",
+      "requestType": "accommodation"
+    },
+    {
+      "id": "cta_practices",
+      "label": "Подобрать практики/услуги",
+      "requestType": "practices"
+    },
+    {
+      "id": "cta_turnkey",
+      "label": "Собрать тур под ключ",
+      "requestType": "turnkey",
+      "optional": true
+    },
+    {
+      "id": "cta_shop",
+      "label": "Интерес к мерчу / предзаказ",
+      "requestType": "shop",
+      "optional": true
+    }
+  ]
+}

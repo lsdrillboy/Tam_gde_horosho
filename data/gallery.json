@@ -1,0 +1,30 @@
+{
+  "albums": [
+    {
+      "id": "rooms",
+      "title": "Номера",
+      "items": []
+    },
+    {
+      "id": "practice-hall",
+      "title": "Зал для практик",
+      "items": []
+    },
+    {
+      "id": "bath-lagoon",
+      "title": "Баня и лагуна",
+      "items": []
+    },
+    {
+      "id": "nature",
+      "title": "Территория и природа",
+      "items": []
+    }
+  ],
+  "itemSchema": {
+    "type": "image | video",
+    "src": "url",
+    "thumb": "url",
+    "caption": "optional"
+  }
+}

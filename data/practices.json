@@ -1,0 +1,176 @@
+{
+  "filters": {
+    "format": {
+      "individual": "Индивидуально",
+      "group": "Группа"
+    },
+    "type": {
+      "body": "Телесные",
+      "meditative": "Медитативные",
+      "ritual": "Ритуальные"
+    },
+    "location": {
+      "indoor": "В помещении",
+      "outdoor": "На природе"
+    }
+  },
+  "flagshipId": "return-to-nature",
+  "practices": [
+    {
+      "id": "steam-bath",
+      "title": "Парения",
+      "description": "Индивидуальные и групповые программы парения.",
+      "format": ["individual", "group"],
+      "type": "body",
+      "location": ["indoor"],
+      "duration": "60–120 мин",
+      "price": {
+        "mode": "request"
+      }
+    },
+    {
+      "id": "massages",
+      "title": "Массажи",
+      "description": "Несколько программ на выбор.",
+      "format": ["individual"],
+      "type": "body",
+      "location": ["indoor"],
+      "duration": "60–90 мин",
+      "price": {
+        "mode": "request"
+      }
+    },
+    {
+      "id": "cacao-ceremony",
+      "title": "Какао-церемония",
+      "description": "Групповая практика с сопровождением ведущего.",
+      "format": ["group"],
+      "type": "ritual",
+      "location": ["indoor"],
+      "duration": "90–120 мин",
+      "price": {
+        "mode": "request"
+      }
+    },
+    {
+      "id": "gong-meditation",
+      "title": "Гонг-медитации",
+      "description": "Глубокая звуковая практика для группы.",
+      "format": ["group"],
+      "type": "meditative",
+      "location": ["indoor", "outdoor"],
+      "duration": "60–90 мин",
+      "price": {
+        "mode": "request"
+      }
+    },
+    {
+      "id": "ecstatic-dance",
+      "title": "Экстатик-дэнс",
+      "description": "Движение и музыкальная практика для группы.",
+      "format": ["group"],
+      "type": "body",
+      "location": ["indoor", "outdoor"],
+      "duration": "90–120 мин",
+      "price": {
+        "mode": "request"
+      }
+    },
+    {
+      "id": "kirtan",
+      "title": "Киртан (мантры под гитару)",
+      "description": "Групповое музыкальное погружение.",
+      "format": ["group"],
+      "type": "ritual",
+      "location": ["indoor"],
+      "duration": "60–120 мин",
+      "price": {
+        "mode": "request"
+      }
+    },
+    {
+      "id": "throat-singing",
+      "title": "Местные ансамбли (горловое пение)",
+      "description": "Аутентичные выступления и сопровождение.",
+      "format": ["group"],
+      "type": "ritual",
+      "location": ["indoor", "outdoor"],
+      "duration": "по запросу",
+      "price": {
+        "mode": "request"
+      }
+    },
+    {
+      "id": "art-therapy",
+      "title": "Арт-терапия и мастер-классы",
+      "description": "Творческие практики для группы или индивидуально.",
+      "format": ["individual", "group"],
+      "type": "meditative",
+      "location": ["indoor"],
+      "duration": "60–180 мин",
+      "price": {
+        "mode": "request"
+      }
+    },
+    {
+      "id": "nails-standing",
+      "title": "Гвоздестояние",
+      "description": "Телесная практика с сопровождением.",
+      "format": ["individual", "group"],
+      "type": "body",
+      "location": ["indoor", "outdoor"],
+      "duration": "30–60 мин",
+      "price": {
+        "mode": "request"
+      }
+    },
+    {
+      "id": "return-to-nature",
+      "title": "«Возвращение к Естеству»",
+      "description": "Элементы тёмного ретрита + ужин с завязанными глазами.",
+      "format": ["group"],
+      "type": "ritual",
+      "location": ["indoor"],
+      "duration": "по запросу",
+      "price": {
+        "mode": "request"
+      }
+    },
+    {
+      "id": "dark-retreats",
+      "title": "Практики в темноте / тёмные ретриты",
+      "description": "Погружение в практику тишины и темноты.",
+      "format": ["individual", "group"],
+      "type": "meditative",
+      "location": ["indoor"],
+      "duration": "по запросу",
+      "price": {
+        "mode": "request"
+      }
+    },
+    {
+      "id": "logistics",
+      "title": "Помощь в организации: трансфер, авто- и конные экскурсии",
+      "description": "Сопровождение и организация логистики.",
+      "format": ["group"],
+      "type": "ritual",
+      "location": ["outdoor"],
+      "duration": "по запросу",
+      "price": {
+        "mode": "request"
+      }
+    },
+    {
+      "id": "wish-window",
+      "title": "Сакральный ритуал “Окно Желаний”",
+      "description": "Индивидуальная или групповая церемония.",
+      "format": ["individual", "group"],
+      "type": "ritual",
+      "location": ["outdoor", "indoor"],
+      "duration": "по запросу",
+      "price": {
+        "mode": "request"
+      }
+    }
+  ]
+}

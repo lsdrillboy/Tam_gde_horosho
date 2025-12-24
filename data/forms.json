@@ -1,0 +1,328 @@
+{
+  "common": {
+    "fields": [
+      {
+        "id": "name",
+        "label": "Контакт: Имя",
+        "type": "text",
+        "required": true
+      },
+      {
+        "id": "phone",
+        "label": "Контакт: Телефон",
+        "type": "tel",
+        "required": false
+      },
+      {
+        "id": "telegram",
+        "label": "Контакт: Telegram username",
+        "type": "text",
+        "required": false,
+        "placeholder": "@username"
+      },
+      {
+        "id": "comment",
+        "label": "Комментарий",
+        "type": "textarea",
+        "required": false
+      }
+    ],
+    "validation": {
+      "requireName": true,
+      "requireContactAny": ["phone", "telegram"]
+    }
+  },
+  "requests": {
+    "accommodation": {
+      "title": "Заявка: Размещение",
+      "fields": [
+        {
+          "id": "dateFrom",
+          "label": "Даты: заезд",
+          "type": "date",
+          "required": true
+        },
+        {
+          "id": "dateTo",
+          "label": "Даты: выезд",
+          "type": "date",
+          "required": true
+        },
+        {
+          "id": "guestsCount",
+          "label": "Количество гостей",
+          "type": "number",
+          "required": true,
+          "min": 1
+        },
+        {
+          "id": "requesterType",
+          "label": "Кто запрашивает",
+          "type": "select",
+          "required": true,
+          "options": [
+            {
+              "value": "organizer",
+              "label": "Организатор ретрита"
+            },
+            {
+              "value": "guest",
+              "label": "Индивидуальный гость"
+            }
+          ]
+        },
+        {
+          "id": "wishes",
+          "label": "Пожелания по размещению",
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "id": "foodType",
+          "label": "Питание",
+          "type": "select",
+          "required": false,
+          "options": [
+            {
+              "value": "full",
+              "label": "Комплекс"
+            },
+            {
+              "value": "twoMeals",
+              "label": "2-разовое"
+            },
+            {
+              "value": "request",
+              "label": "по запросу"
+            }
+          ]
+        },
+        {
+          "id": "foodPreferences",
+          "label": "Особенности питания",
+          "type": "multiselect",
+          "required": false,
+          "options": [
+            {
+              "value": "vegetarian",
+              "label": "Вегетарианское"
+            },
+            {
+              "value": "meatOnRequest",
+              "label": "Мясо по запросу"
+            }
+          ]
+        },
+        {
+          "id": "foodAllergies",
+          "label": "Аллергии/ограничения",
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "id": "foodAddons",
+          "label": "Допы",
+          "type": "multiselect",
+          "required": false,
+          "options": [
+            {
+              "value": "coffee-break",
+              "label": "Кофе-брейк"
+            },
+            {
+              "value": "cake",
+              "label": "Торт"
+            },
+            {
+              "value": "boxed-lunch",
+              "label": "Обед с собой"
+            }
+          ]
+        },
+        {
+          "id": "foodAddonsComment",
+          "label": "Комментарий к допам",
+          "type": "textarea",
+          "required": false
+        }
+      ]
+    },
+    "practices": {
+      "title": "Заявка: Практики и услуги",
+      "fields": [
+        {
+          "id": "datesOrDays",
+          "label": "Даты / дни практик",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "participantsCount",
+          "label": "Количество участников",
+          "type": "number",
+          "required": true,
+          "min": 1
+        },
+        {
+          "id": "practiceIds",
+          "label": "Выбранные практики",
+          "type": "multiselect",
+          "required": true,
+          "minItems": 1,
+          "dataSource": "practices.json"
+        },
+        {
+          "id": "wishes",
+          "label": "Пожелания к формату / расписанию",
+          "type": "textarea",
+          "required": false
+        }
+      ]
+    },
+    "turnkey": {
+      "title": "Заявка: Тур под ключ",
+      "fields": [
+        {
+          "id": "dateFrom",
+          "label": "Даты: заезд",
+          "type": "date",
+          "required": true
+        },
+        {
+          "id": "dateTo",
+          "label": "Даты: выезд",
+          "type": "date",
+          "required": true
+        },
+        {
+          "id": "guestsCount",
+          "label": "Количество гостей",
+          "type": "number",
+          "required": true,
+          "min": 1
+        },
+        {
+          "id": "interests",
+          "label": "Интересуют",
+          "type": "multiselect",
+          "required": true,
+          "minItems": 1,
+          "options": [
+            {
+              "value": "accommodation",
+              "label": "Проживание"
+            },
+            {
+              "value": "food",
+              "label": "Питание"
+            },
+            {
+              "value": "practices",
+              "label": "Практики"
+            },
+            {
+              "value": "excursions",
+              "label": "Экскурсии"
+            }
+          ]
+        },
+        {
+          "id": "foodType",
+          "label": "Питание",
+          "type": "select",
+          "required": false,
+          "options": [
+            {
+              "value": "full",
+              "label": "Комплекс"
+            },
+            {
+              "value": "twoMeals",
+              "label": "2-разовое"
+            },
+            {
+              "value": "request",
+              "label": "по запросу"
+            }
+          ]
+        },
+        {
+          "id": "foodPreferences",
+          "label": "Особенности питания",
+          "type": "multiselect",
+          "required": false,
+          "options": [
+            {
+              "value": "vegetarian",
+              "label": "Вегетарианское"
+            },
+            {
+              "value": "meatOnRequest",
+              "label": "Мясо по запросу"
+            }
+          ]
+        },
+        {
+          "id": "foodAllergies",
+          "label": "Аллергии/ограничения",
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "id": "foodAddons",
+          "label": "Допы",
+          "type": "multiselect",
+          "required": false,
+          "options": [
+            {
+              "value": "coffee-break",
+              "label": "Кофе-брейк"
+            },
+            {
+              "value": "cake",
+              "label": "Торт"
+            },
+            {
+              "value": "boxed-lunch",
+              "label": "Обед с собой"
+            }
+          ]
+        },
+        {
+          "id": "foodAddonsComment",
+          "label": "Комментарий к допам",
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "id": "organizerComment",
+          "label": "Комментарий организатора",
+          "type": "textarea",
+          "required": false
+        }
+      ]
+    },
+    "shop": {
+      "title": "Заявка: Магазин / мерч",
+      "fields": [
+        {
+          "id": "items",
+          "label": "Интересует",
+          "type": "multiselect",
+          "required": false,
+          "optionsSource": "shop.json"
+        },
+        {
+          "id": "comment",
+          "label": "Комментарий",
+          "type": "textarea",
+          "required": false
+        }
+      ]
+    }
+  },
+  "afterSubmit": {
+    "title": "Заявка принята",
+    "message": "Администратор скоро свяжется с вами."
+  }
+}

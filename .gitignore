@@ -1,0 +1,6 @@
+node_modules/
+.env
+logs/requests.log
+logs/*.out
+backend/.env
+Tam_gde_horosho/

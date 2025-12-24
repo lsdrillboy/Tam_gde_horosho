@@ -1,0 +1,33 @@
+{
+  "status": "soon",
+  "title": "Магазин (скоро)",
+  "description": "Натуральные вещи, которые продолжают ощущение места: текстиль, ароматы, практики для дома.",
+  "cta": "Оставить интерес / предзаказ",
+  "items": [
+    {
+      "id": "hoodie",
+      "label": "Худи",
+      "optional": true
+    },
+    {
+      "id": "tshirt",
+      "label": "Футболка",
+      "optional": true
+    },
+    {
+      "id": "scent",
+      "label": "Аромат/свеча",
+      "optional": true
+    },
+    {
+      "id": "notebook",
+      "label": "Блокнот",
+      "optional": true
+    },
+    {
+      "id": "bag",
+      "label": "Шоппер",
+      "optional": true
+    }
+  ]
+}
