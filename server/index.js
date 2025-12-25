@@ -139,7 +139,7 @@ app.listen(config.port, () => {
 });
 
 function isSupportedType(type) {
-  return ["accommodation", "practices", "turnkey", "shop"].includes(type);
+  return ["dates", "room", "service", "master", "accommodation", "practices", "turnkey", "shop"].includes(type);
 }
 
 function checkRateLimit(key, windowMs) {
@@ -177,6 +177,48 @@ function validateRequest(type, payload) {
     }
     if (!payload.guestsCount) {
       errors.push("Укажите количество гостей.");
+    }
+  }
+
+  if (type === "dates") {
+    if (!payload.preferredDates) {
+      errors.push("Укажите предпочтительные даты.");
+    }
+    if (!payload.requesterType) {
+      errors.push("Укажите формат запроса.");
+    }
+    if (!payload.groupSize) {
+      errors.push("Укажите количество людей или групп.");
+    }
+  }
+
+  if (type === "room") {
+    if (!payload.roomId) {
+      errors.push("Укажите тип размещения.");
+    }
+    if (!payload.preferredDates) {
+      errors.push("Укажите предпочтительные даты.");
+    }
+    if (!payload.guestsCount) {
+      errors.push("Укажите количество гостей.");
+    }
+  }
+
+  if (type === "service") {
+    if (!payload.serviceId) {
+      errors.push("Укажите услугу.");
+    }
+    if (!payload.preferredDates) {
+      errors.push("Укажите предпочтительные даты.");
+    }
+  }
+
+  if (type === "master") {
+    if (!payload.masterId) {
+      errors.push("Укажите мастера.");
+    }
+    if (!payload.preferredDates) {
+      errors.push("Укажите предпочтительные даты.");
     }
   }
 

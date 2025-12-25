@@ -14,6 +14,9 @@ function loadContent() {
   const appData = readJson("app.json");
   return {
     app: appData.app,
+    accommodation: readJson("accommodation.json"),
+    services: readJson("services.json"),
+    masters: readJson("masters.json"),
     practices: readJson("practices.json"),
     kitchen: readJson("kitchen.json"),
     shop: readJson("shop.json"),

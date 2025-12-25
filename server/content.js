@@ -8,10 +8,11 @@ const contentFiles = {
   app: "app.json",
   home: "home.json",
   accommodation: "accommodation.json",
+  services: "services.json",
+  masters: "masters.json",
   practices: "practices.json",
   kitchen: "kitchen.json",
   gallery: "gallery.json",
-  calendar: "calendar.json",
   shop: "shop.json",
   forms: "forms.json"
 };
@@ -26,6 +27,9 @@ function loadContent() {
   const appData = readJson("app.json");
   return {
     app: appData.app,
+    accommodation: readJson("accommodation.json"),
+    services: readJson("services.json"),
+    masters: readJson("masters.json"),
     practices: readJson("practices.json"),
     kitchen: readJson("kitchen.json"),
     shop: readJson("shop.json"),

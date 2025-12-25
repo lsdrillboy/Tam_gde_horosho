@@ -78,12 +78,32 @@ function getShopLabels(ids, shop) {
   });
 }
 
+function getRoomLabel(id, accommodation) {
+  if (!id || !accommodation?.types) return valueOrNotProvided(id);
+  const room = accommodation.types.find((item) => item.id === id);
+  return room ? room.title : valueOrNotProvided(id);
+}
+
+function getServiceLabel(id, services) {
+  if (!id || !services?.extras?.items) return valueOrNotProvided(id);
+  const service = services.extras.items.find((item) => item.id === id);
+  return service ? service.title : valueOrNotProvided(id);
+}
+
+function getMasterLabel(id, masters) {
+  if (!id || !masters?.items) return valueOrNotProvided(id);
+  const master = masters.items.find((item) => item.id === id);
+  return master ? master.name : valueOrNotProvided(id);
+}
+
 function getInterestLabels(ids) {
   const map = {
     accommodation: "проживание",
     food: "питание",
     practices: "практики",
-    excursions: "экскурсии"
+    excursions: "экскурсии",
+    hall: "зал для практик",
+    services: "доп. услуги"
   };
   if (!Array.isArray(ids) || ids.length === 0) return [];
   return ids.map((id) => map[id] || id);
@@ -136,7 +156,7 @@ function buildTurnkeyMessage(payload, content) {
 
   return [
     signature,
-    "Тип запроса: Тур под ключ",
+    "Тип запроса: Заявка организатора",
     `Даты: ${valueOrNotProvided(payload.dateFrom)} — ${valueOrNotProvided(payload.dateTo)}`,
     `Количество гостей: ${valueOrNotProvided(payload.guestsCount)}`,
     "",
@@ -169,8 +189,80 @@ function buildShopMessage(payload, content) {
   ].join("\n");
 }
 
+function buildDatesMessage(payload, content) {
+  const signature = content.app.signature;
+  return [
+    signature,
+    "Тип запроса: Запрос дат",
+    `Предпочитаемые даты: ${valueOrNotProvided(payload.preferredDates)}`,
+    `Кто запрашивает: ${mapRequesterType(payload.requesterType)}`,
+    `Количество людей / групп: ${valueOrNotProvided(payload.groupSize)}`,
+    "",
+    `Комментарий: ${valueOrNone(payload.comment)}`,
+    "",
+    `Контакт — Имя: ${valueOrNotProvided(payload.name)}`,
+    `Контакт — Телефон/Telegram: ${formatContact(payload)}`
+  ].join("\n");
+}
+
+function buildRoomMessage(payload, content) {
+  const signature = content.app.signature;
+  return [
+    signature,
+    "Тип запроса: Размещение",
+    `Тип размещения: ${getRoomLabel(payload.roomId, content.accommodation)}`,
+    `Предпочитаемые даты: ${valueOrNotProvided(payload.preferredDates)}`,
+    `Количество гостей: ${valueOrNotProvided(payload.guestsCount)}`,
+    "",
+    `Комментарий: ${valueOrNone(payload.comment)}`,
+    "",
+    `Контакт — Имя: ${valueOrNotProvided(payload.name)}`,
+    `Контакт — Телефон/Telegram: ${formatContact(payload)}`
+  ].join("\n");
+}
+
+function buildServiceMessage(payload, content) {
+  const signature = content.app.signature;
+  return [
+    signature,
+    "Тип запроса: Услуга",
+    `Услуга: ${getServiceLabel(payload.serviceId, content.services)}`,
+    `Предпочитаемые даты: ${valueOrNotProvided(payload.preferredDates)}`,
+    `Количество участников: ${valueOrNotProvided(payload.participantsCount)}`,
+    "",
+    `Комментарий: ${valueOrNone(payload.comment)}`,
+    "",
+    `Контакт — Имя: ${valueOrNotProvided(payload.name)}`,
+    `Контакт — Телефон/Telegram: ${formatContact(payload)}`
+  ].join("\n");
+}
+
+function buildMasterMessage(payload, content) {
+  const signature = content.app.signature;
+  return [
+    signature,
+    "Тип запроса: Мастер",
+    `Мастер: ${getMasterLabel(payload.masterId, content.masters)}`,
+    `Предпочитаемые даты: ${valueOrNotProvided(payload.preferredDates)}`,
+    `Количество участников: ${valueOrNotProvided(payload.participantsCount)}`,
+    "",
+    `Комментарий: ${valueOrNone(payload.comment)}`,
+    "",
+    `Контакт — Имя: ${valueOrNotProvided(payload.name)}`,
+    `Контакт — Телефон/Telegram: ${formatContact(payload)}`
+  ].join("\n");
+}
+
 function buildMessage(type, payload, content) {
   switch (type) {
+    case "dates":
+      return buildDatesMessage(payload, content);
+    case "room":
+      return buildRoomMessage(payload, content);
+    case "service":
+      return buildServiceMessage(payload, content);
+    case "master":
+      return buildMasterMessage(payload, content);
     case "accommodation":
       return buildAccommodationMessage(payload, content);
     case "practices":

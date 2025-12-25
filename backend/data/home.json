@@ -28,28 +28,22 @@
   ],
   "quickActions": [
     {
-      "id": "accommodation",
-      "label": "Размещение",
-      "route": "/accommodation",
-      "icon": "home"
-    },
-    {
-      "id": "services",
-      "label": "Услуги",
-      "route": "/services",
-      "icon": "spark"
-    },
-    {
       "id": "dates",
-      "label": "Даты",
-      "route": "/calendar",
+      "label": "Запросить даты",
+      "route": "/request/dates",
       "icon": "calendar"
     },
     {
+      "id": "price",
+      "label": "Запросить стоимость",
+      "route": "/request/room",
+      "icon": "price"
+    },
+    {
       "id": "contacts",
-      "label": "Контакты",
+      "label": "Как добраться / Контакты",
       "route": "/contact",
-      "icon": "chat"
+      "icon": "pin"
     }
   ],
   "galleryPreview": {
@@ -61,12 +55,12 @@
     "title": "Обсудить сотрудничество",
     "text": "Расскажите о формате ретрита — мы предложим оптимальные условия.",
     "primary": {
-      "label": "Оставить заявку организатора",
-      "route": "/request/turnkey"
+      "label": "Запросить даты",
+      "route": "/request/dates"
     },
     "secondary": {
-      "label": "Запросить даты",
-      "route": "/calendar"
+      "label": "Связаться",
+      "route": "/contact"
     }
   }
 }

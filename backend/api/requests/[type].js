@@ -3,7 +3,16 @@ const { loadContent } = require("../../lib/content");
 const { verifyInitData, sendTelegramMessage } = require("../../lib/telegram");
 const { checkRateLimit } = require("../../lib/rate-limit");
 
-const SUPPORTED_TYPES = ["accommodation", "practices", "turnkey", "shop"];
+const SUPPORTED_TYPES = [
+  "dates",
+  "room",
+  "service",
+  "master",
+  "accommodation",
+  "practices",
+  "turnkey",
+  "shop"
+];
 
 module.exports = async (req, res) => {
   applyCors(req, res);
@@ -148,6 +157,48 @@ function validateRequest(type, payload) {
   }
   if (!phone && !telegram) {
     errors.push("Нужен телефон или Telegram username.");
+  }
+
+  if (type === "dates") {
+    if (!payload.preferredDates) {
+      errors.push("Укажите предпочтительные даты.");
+    }
+    if (!payload.requesterType) {
+      errors.push("Укажите формат запроса.");
+    }
+    if (!payload.groupSize) {
+      errors.push("Укажите количество людей или групп.");
+    }
+  }
+
+  if (type === "room") {
+    if (!payload.roomId) {
+      errors.push("Укажите тип размещения.");
+    }
+    if (!payload.preferredDates) {
+      errors.push("Укажите предпочтительные даты.");
+    }
+    if (!payload.guestsCount) {
+      errors.push("Укажите количество гостей.");
+    }
+  }
+
+  if (type === "service") {
+    if (!payload.serviceId) {
+      errors.push("Укажите услугу.");
+    }
+    if (!payload.preferredDates) {
+      errors.push("Укажите предпочтительные даты.");
+    }
+  }
+
+  if (type === "master") {
+    if (!payload.masterId) {
+      errors.push("Укажите мастера.");
+    }
+    if (!payload.preferredDates) {
+      errors.push("Укажите предпочтительные даты.");
+    }
   }
 
   if (type === "accommodation" || type === "turnkey") {

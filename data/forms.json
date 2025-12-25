@@ -33,20 +33,57 @@
     }
   },
   "requests": {
-    "accommodation": {
+    "dates": {
       "title": "Запросить даты",
       "fields": [
         {
-          "id": "dateFrom",
-          "label": "Даты: заезд",
-          "type": "date",
-          "required": true
+          "id": "preferredDates",
+          "label": "Предпочитаемые даты",
+          "type": "text",
+          "required": true,
+          "placeholder": "примерно с … по …"
         },
         {
-          "id": "dateTo",
-          "label": "Даты: выезд",
-          "type": "date",
-          "required": true
+          "id": "requesterType",
+          "label": "Формат",
+          "type": "segmented",
+          "required": true,
+          "options": [
+            {
+              "value": "organizer",
+              "label": "Организатор"
+            },
+            {
+              "value": "guest",
+              "label": "Гость"
+            }
+          ]
+        },
+        {
+          "id": "groupSize",
+          "label": "Кол-во людей / групп",
+          "type": "number",
+          "required": true,
+          "min": 1
+        }
+      ]
+    },
+    "room": {
+      "title": "Запросить стоимость",
+      "fields": [
+        {
+          "id": "roomId",
+          "label": "Тип размещения",
+          "type": "select",
+          "required": true,
+          "optionsSource": "accommodation"
+        },
+        {
+          "id": "preferredDates",
+          "label": "Предпочитаемые даты",
+          "type": "text",
+          "required": true,
+          "placeholder": "примерно с … по …"
         },
         {
           "id": "guestsCount",
@@ -54,96 +91,58 @@
           "type": "number",
           "required": true,
           "min": 1
-        },
+        }
+      ]
+    },
+    "service": {
+      "title": "Записаться / Узнать условия",
+      "fields": [
         {
-          "id": "requesterType",
-          "label": "Кто запрашивает",
+          "id": "serviceId",
+          "label": "Услуга",
           "type": "select",
           "required": true,
-          "options": [
-            {
-              "value": "organizer",
-              "label": "Организатор ретрита"
-            },
-            {
-              "value": "guest",
-              "label": "Индивидуальный гость"
-            }
-          ]
+          "optionsSource": "services"
         },
         {
-          "id": "wishes",
-          "label": "Пожелания по размещению",
-          "type": "textarea",
-          "required": false
+          "id": "preferredDates",
+          "label": "Предпочитаемые даты",
+          "type": "text",
+          "required": true,
+          "placeholder": "дата или период"
         },
         {
-          "id": "foodType",
-          "label": "Питание",
+          "id": "participantsCount",
+          "label": "Количество участников",
+          "type": "number",
+          "required": false,
+          "min": 1
+        }
+      ]
+    },
+    "master": {
+      "title": "Запросить запись",
+      "fields": [
+        {
+          "id": "masterId",
+          "label": "Мастер",
           "type": "select",
+          "required": true,
+          "optionsSource": "masters"
+        },
+        {
+          "id": "preferredDates",
+          "label": "Предпочитаемые даты",
+          "type": "text",
+          "required": true,
+          "placeholder": "дата или период"
+        },
+        {
+          "id": "participantsCount",
+          "label": "Количество участников",
+          "type": "number",
           "required": false,
-          "options": [
-            {
-              "value": "full",
-              "label": "Комплекс"
-            },
-            {
-              "value": "twoMeals",
-              "label": "2-разовое"
-            },
-            {
-              "value": "request",
-              "label": "по запросу"
-            }
-          ]
-        },
-        {
-          "id": "foodPreferences",
-          "label": "Особенности питания",
-          "type": "multiselect",
-          "required": false,
-          "options": [
-            {
-              "value": "vegetarian",
-              "label": "Вегетарианское"
-            },
-            {
-              "value": "meatOnRequest",
-              "label": "Мясо по запросу"
-            }
-          ]
-        },
-        {
-          "id": "foodAllergies",
-          "label": "Аллергии/ограничения",
-          "type": "textarea",
-          "required": false
-        },
-        {
-          "id": "foodAddons",
-          "label": "Допы",
-          "type": "multiselect",
-          "required": false,
-          "options": [
-            {
-              "value": "coffee-break",
-              "label": "Кофе-брейк"
-            },
-            {
-              "value": "cake",
-              "label": "Торт"
-            },
-            {
-              "value": "boxed-lunch",
-              "label": "Обед с собой"
-            }
-          ]
-        },
-        {
-          "id": "foodAddonsComment",
-          "label": "Комментарий к допам",
-          "type": "textarea",
-          "required": false
+          "min": 1
         }
       ]
     },
@@ -316,7 +315,7 @@
     }
   },
   "afterSubmit": {
-    "title": "Заявка отправлена",
+    "title": "Заявка принята",
     "message": "Менеджер свяжется с вами в ближайшее время."
   }
 }

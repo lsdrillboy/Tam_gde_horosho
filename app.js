@@ -8,13 +8,9 @@ const state = {
     location: null
   },
   ui: {
-    calendarMonth: null,
-    selectedRange: {
-      start: null,
-      end: null
-    },
     galleryAlbumId: null,
-    lastSuccess: null
+    lastSuccess: null,
+    lastRoute: null
   }
 };
 
@@ -23,29 +19,13 @@ const dataFiles = {
   home: "data/home.json",
   accommodation: "data/accommodation.json",
   services: "data/services.json",
+  masters: "data/masters.json",
   practices: "data/practices.json",
   kitchen: "data/kitchen.json",
   gallery: "data/gallery.json",
-  calendar: "data/calendar.json",
   shop: "data/shop.json",
   forms: "data/forms.json"
 };
-
-const weekdayNames = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
-const monthNames = [
-  "Январь",
-  "Февраль",
-  "Март",
-  "Апрель",
-  "Май",
-  "Июнь",
-  "Июль",
-  "Август",
-  "Сентябрь",
-  "Октябрь",
-  "Ноябрь",
-  "Декабрь"
-];
 
 const ICONS = {
   home: "<path d=\"M3 11.5 12 4l9 7.5V21H3z\"/><path d=\"M9 21v-6h6v6\"/>",
@@ -54,11 +34,13 @@ const ICONS = {
   calendar: "<rect x=\"3\" y=\"5\" width=\"18\" height=\"16\" rx=\"2\"/><path d=\"M8 3v4M16 3v4M3 10h18\"/>",
   chat: "<path d=\"M4 6h16v9a2 2 0 0 1-2 2H9l-4 4v-4H6a2 2 0 0 1-2-2z\"/>",
   phone: "<path d=\"M6 4l4 4-2 2a12 12 0 0 0 6 6l2-2 4 4-3 3c-6-1-12-6-13-13z\"/>",
+  masters: "<circle cx=\"12\" cy=\"8\" r=\"3\"/><path d=\"M4 20a8 8 0 0 1 16 0\"/><path d=\"M18 8l2 2-2 2\"/>",
   leaf: "<path d=\"M6 15c5-8 12-9 12-9s0 8-8 12c-2 1-4 1-6-3z\"/><path d=\"M8 13c3 0 5-1 7-3\"/>",
   silence: "<path d=\"M15 4a7 7 0 1 0 5 12\"/>",
   pin: "<path d=\"M12 21s6-6.5 6-11a6 6 0 1 0-12 0c0 4.5 6 11 6 11z\"/><circle cx=\"12\" cy=\"10\" r=\"2\"/>",
   people: "<path d=\"M7 14a4 4 0 1 1 8 0\"/><path d=\"M4 20a6 6 0 0 1 16 0\"/>",
   price: "<path d=\"M7 7h7l4 5-7 7-5-5z\"/><circle cx=\"13\" cy=\"9\" r=\"1\"/>",
+  check: "<path d=\"M5 12l4 4L19 6\"/>",
   hall: "<rect x=\"4\" y=\"5\" width=\"16\" height=\"14\" rx=\"2\"/><path d=\"M4 9h16\"/>",
   food: "<path d=\"M6 3v7M10 3v7M8 3v7\"/><path d=\"M14 3v7a3 3 0 0 0 6 0V3\"/><path d=\"M6 10v11\"/><path d=\"M18 10v11\"/>",
   steam: "<path d=\"M8 4c2 2 2 4 0 6\"/><path d=\"M12 4c2 2 2 4 0 6\"/><path d=\"M16 4c2 2 2 4 0 6\"/>",
@@ -74,7 +56,10 @@ const ICONS = {
   music: "<path d=\"M9 5v11a3 3 0 1 1-2-2.8\"/><path d=\"M9 5l9-2v10a3 3 0 1 1-2-2.8\"/>",
   brush: "<path d=\"M13 4l7 7-4 4-7-7z\"/><path d=\"M4 20c3 0 5-2 5-5-3 0-5 2-5 5z\"/>",
   craft: "<path d=\"M7 4h10l2 7H5z\"/><path d=\"M6 11h12v5a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4z\"/>",
-  drum: "<ellipse cx=\"12\" cy=\"7\" rx=\"7\" ry=\"3\"/><path d=\"M5 7v8c0 2 3 4 7 4s7-2 7-4V7\"/><path d=\"M4 4l4 4M20 4l-4 4\"/>"
+  drum: "<ellipse cx=\"12\" cy=\"7\" rx=\"7\" ry=\"3\"/><path d=\"M5 7v8c0 2 3 4 7 4s7-2 7-4V7\"/><path d=\"M4 4l4 4M20 4l-4 4\"/>",
+  telegram: "<path d=\"M21 5L3 12l6 2 2 6 10-15z\"/><path d=\"M9 14l12-9\"/>",
+  instagram: "<rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"5\"/><circle cx=\"12\" cy=\"12\" r=\"4\"/><circle cx=\"17\" cy=\"7\" r=\"1\"/>",
+  globe: "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M3 12h18\"/><path d=\"M12 3a15 15 0 0 1 0 18\"/><path d=\"M12 3a15 15 0 0 0 0 18\"/>"
 };
 
 init();
@@ -82,10 +67,6 @@ init();
 async function init() {
   initTelegram();
   await loadData();
-  if (!state.ui.calendarMonth) {
-    const now = new Date();
-    state.ui.calendarMonth = { year: now.getFullYear(), month: now.getMonth() };
-  }
   if (!state.ui.galleryAlbumId && state.data.gallery?.albums?.length) {
     state.ui.galleryAlbumId = state.data.gallery.albums[0].id;
   }
@@ -107,6 +88,63 @@ function renderIcon(name, className = "") {
     <svg class="icon ${className}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       ${markup}
     </svg>
+  `;
+}
+
+function renderSocialLinks(socials = {}) {
+  const links = [
+    socials.telegram ? { href: socials.telegram, icon: "telegram", label: "Telegram" } : null,
+    socials.instagram ? { href: socials.instagram, icon: "instagram", label: "Instagram" } : null,
+    socials.website ? { href: socials.website, icon: "globe", label: "Website" } : null
+  ].filter(Boolean);
+
+  if (!links.length) {
+    return "<span class=\"card__text\">Контакты уточняются</span>";
+  }
+
+  return links
+    .map(
+      (link) => `
+        <a class="social-link" href="${link.href}" target="_blank" rel="noopener" aria-label="${link.label}" title="${link.label}">
+          ${renderIcon(link.icon)}
+        </a>
+      `
+    )
+    .join("");
+}
+
+function renderCarousel(items = [], label = "") {
+  const slides = items.length ? items : [""];
+  const track = slides
+    .map((src, index) => {
+      if (!src) {
+        return `
+          <div class="carousel__slide carousel__slide--placeholder">
+            <div>Фото появится скоро</div>
+          </div>
+        `;
+      }
+      return `
+        <div class="carousel__slide">
+          <img src="${src}" alt="${label} ${index + 1}" loading="lazy" />
+        </div>
+      `;
+    })
+    .join("");
+
+  const dots = slides
+    .map((_, index) => `<button class="carousel__dot ${index === 0 ? "active" : ""}" data-carousel-dot="${index}"></button>`)
+    .join("");
+
+  return `
+    <div class="carousel" data-carousel>
+      <div class="carousel__track">${track}</div>
+      <div class="carousel__controls">
+        <button class="carousel__button" data-carousel-prev>←</button>
+        <div class="carousel__dots">${dots}</div>
+        <button class="carousel__button" data-carousel-next>→</button>
+      </div>
+    </div>
   `;
 }
 
@@ -167,6 +205,15 @@ function renderRoute(path, query) {
     const type = parts[1] || query.get("type");
     return renderRequestForm(type, query);
   }
+  if (parts[0] === "room") {
+    return renderRoomDetail(parts[1]);
+  }
+  if (parts[0] === "service") {
+    return renderServiceDetail(parts[1]);
+  }
+  if (parts[0] === "master") {
+    return renderMasterDetail(parts[1]);
+  }
 
   switch (path) {
     case "/":
@@ -176,10 +223,10 @@ function renderRoute(path, query) {
       return renderAccommodation();
     case "/services":
       return renderServices();
+    case "/masters":
+      return renderMasters();
     case "/practices":
       return renderPractices();
-    case "/calendar":
-      return renderCalendar();
     case "/kitchen":
       return renderKitchen();
     case "/gallery":
@@ -233,7 +280,7 @@ function renderTabBar(activeTab) {
     { id: "home", label: "Главная", route: "/home", icon: "home" },
     { id: "accommodation", label: "Размещение", route: "/accommodation", icon: "bed" },
     { id: "services", label: "Услуги", route: "/services", icon: "spark" },
-    { id: "calendar", label: "Даты", route: "/calendar", icon: "calendar" },
+    { id: "masters", label: "Мастера", route: "/masters", icon: "masters" },
     { id: "contact", label: "Контакты", route: "/contact", icon: "chat" }
   ];
 
@@ -253,8 +300,8 @@ function renderTabBar(activeTab) {
 
 function getActiveTab(path) {
   if (path.startsWith("/accommodation")) return "accommodation";
-  if (path.startsWith("/services") || path.startsWith("/practices") || path.startsWith("/kitchen")) return "services";
-  if (path.startsWith("/calendar")) return "calendar";
+  if (path.startsWith("/services") || path.startsWith("/practices") || path.startsWith("/kitchen") || path.startsWith("/service")) return "services";
+  if (path.startsWith("/masters") || path.startsWith("/master")) return "masters";
   if (path.startsWith("/contact") || path.startsWith("/request")) return "contact";
   return "home";
 }
@@ -314,8 +361,8 @@ function renderHome() {
         <div class="hero__subtitle">${home.hero.subtitle}</div>
         <p class="hero__description">${home.hero.description}</p>
         <div class="hero__actions">
-          <button class="btn btn--primary" data-nav=\"#/contact\">Связаться</button>
-          <button class="btn btn--ghost" data-nav=\"#/calendar\">Запросить даты</button>
+          <button class="btn btn--primary" data-nav=\"#/request/dates\">Запросить даты</button>
+          <button class="btn btn--ghost" data-nav=\"#/contact\">Связаться</button>
         </div>
       </div>
     </section>
@@ -382,22 +429,34 @@ function renderAccommodation() {
 
   const typesMarkup = accommodation.types
     .map((type) => {
-      const priceLabel = type.price?.mode === "fixed"
-        ? `${formatCurrency(type.price.value)} / ночь`
-        : "Цена по запросу";
-      const media = type.image
-        ? `<div class=\"image-card__media\" style=\"background-image: url('${type.image}')\"></div>`
-        : `<div class=\"image-card__media image-card__media--placeholder\">Фото номера</div>`;
+      const media = type.photos?.[0]
+        ? `<img src="${type.photos[0]}" alt="${type.title}" />`
+        : `<div class="room-card__placeholder">Фото номера</div>`;
+      const capacityLabel = type.capacityMin && type.capacityMax
+        ? `${type.capacityMin}–${type.capacityMax} гостя`
+        : "Вместимость по запросу";
+      const features = Array.isArray(type.features) ? type.features.slice(0, 2) : [];
+      const priceLabel = type.price?.text || "Цена по запросу";
       return `
-        <article class="image-card">
-          ${media}
-          <div class="image-card__overlay">
-            <div class="image-card__title">${type.title}</div>
-            <div class="price-tag">${priceLabel}</div>
-          </div>
-          <div class="image-card__body">
-            <div class="image-card__meta">${renderIcon("people")}${type.capacity}</div>
-            <div class="card__text">${type.description}</div>
+        <article class="room-card">
+          <div class="room-card__media">${media}</div>
+          <div class="room-card__body">
+            <div class="room-card__header">
+              <h3 class="card__title">${type.title}</h3>
+              ${type.badge ? `<span class="tag">${type.badge}</span>` : ""}
+            </div>
+            <div class="room-card__subtitle clamp-2">${type.subtitle}</div>
+            <div class="room-card__meta">
+              <span>${renderIcon("people")}${capacityLabel}</span>
+              ${features.map((item) => `<span>${renderIcon("check")}${item}</span>`).join("")}
+            </div>
+            <div class="room-card__actions">
+              <span class="chip">${priceLabel}</span>
+              <div class="room-card__buttons">
+                <button class="btn btn--primary btn--small" data-nav=\"#/request/room?roomId=${type.id}\">Запросить</button>
+                <button class="btn btn--text" data-nav=\"#/room/${type.id}\">Подробнее</button>
+              </div>
+            </div>
           </div>
         </article>
       `;
@@ -451,7 +510,7 @@ function renderAccommodation() {
     </section>
     <section class="section">
       <h2 class="section-title">Типы размещения</h2>
-      <div class="image-grid">
+      <div class="room-grid">
         ${typesMarkup}
       </div>
     </section>
@@ -487,11 +546,11 @@ function renderAccommodation() {
     <div class="cta-panel">
       <div>
         <h2 class="section-title">Готовы обсудить детали?</h2>
-        <div class="section-subtitle">Оставьте заявку, и мы подберем оптимальные условия.</div>
+        <div class="section-subtitle">Мы подберем формат размещения и ответим на вопросы.</div>
       </div>
       <div class="cta-panel__actions">
-        <button class="btn btn--primary" data-nav=\"#/request/turnkey\">Оставить заявку организатора</button>
-        <button class="btn btn--ghost" data-nav=\"#/request/accommodation\">Запросить даты</button>
+        <button class="btn btn--primary" data-nav=\"#/request/dates\">Запросить даты</button>
+        <button class="btn btn--ghost" data-nav=\"#/contact\">Связаться</button>
       </div>
     </div>
   `;
@@ -499,13 +558,87 @@ function renderAccommodation() {
   return renderShell({ content, activeTab: "accommodation" });
 }
 
+function renderRoomDetail(roomId) {
+  const { accommodation } = state.data;
+  const room = accommodation.types.find((item) => item.id === roomId);
+  if (!room) {
+    return renderNotFound();
+  }
+
+  const carousel = renderCarousel(room.photos, room.title);
+  const features = (room.features || []).map((item) => `<li>${item}</li>`).join("");
+  const included = (accommodation.included || []).map((item) => `<li>${item}</li>`).join("");
+  const conditions = (accommodation.conditions || []).map((item) => `<li>${item}</li>`).join("");
+  const priceLabel = room.price?.text || "Цена по запросу";
+
+  const content = `
+    <section class="page-hero">
+      <h1 class="page-title">${room.title}</h1>
+      <div class="page-subtitle">${room.subtitle}</div>
+    </section>
+    <section class="card card--strong">
+      ${carousel}
+    </section>
+    <section class="card">
+      <h2 class="section-title">Описание</h2>
+      <p class="card__text">${room.description}</p>
+      <div class="pill-row">
+        <span class="pill">${priceLabel}</span>
+        <span class="pill">${room.capacityMin}–${room.capacityMax} гостя</span>
+      </div>
+    </section>
+    <section class="card">
+      <h2 class="section-title">Что включено</h2>
+      <ul class="list">${included}</ul>
+    </section>
+    <section class="card">
+      <h2 class="section-title">Особенности номера</h2>
+      <ul class="list">${features}</ul>
+    </section>
+    <section class="card">
+      <h2 class="section-title">Условия</h2>
+      <ul class="list">${conditions}</ul>
+    </section>
+    <div class="cta-panel">
+      <div>
+        <h2 class="section-title">Запросить стоимость</h2>
+        <div class="section-subtitle">Ответим по доступности и условиям.</div>
+      </div>
+      <div class="cta-panel__actions">
+        <button class="btn btn--primary" data-nav=\"#/request/room?roomId=${room.id}\">Запросить</button>
+        <button class="btn btn--ghost" data-nav=\"#/contact\">Связаться</button>
+      </div>
+    </div>
+  `;
+
+  return {
+    ...renderShell({ content, activeTab: "accommodation" }),
+    bind: bindCarousels
+  };
+}
+
 function renderServices() {
   const { services } = state.data;
+
+  const extras = services.extras.items
+    .map(
+      (item) => `
+        <button class="service-card" data-nav=\"#/service/${item.id}\">
+          <div class="service-card__icon">${renderIcon(item.icon)}</div>
+          <div class="service-card__content">
+            <div class="service-card__title">${item.title}</div>
+            <div class="service-card__text clamp-1">${item.short}</div>
+          </div>
+          <div class="service-card__more">Подробнее</div>
+        </button>
+      `
+    )
+    .join("");
 
   const supportCards = services.organizerSupport.items
     .map(
       (item) => `
-        <article class="card service-card">
+        <article class="card service-card--compact">
           ${renderIcon(item.icon)}
           <div>
             <h3 class="card__title">${item.title}</h3>
@@ -515,37 +648,6 @@ function renderServices() {
       `
     )
     .join("");
-
-  const guestCards = services.guestServices.items
-    .map(
-      (item) => `
-        <article class="card service-card">
-          ${renderIcon(item.icon)}
-          <div>
-            <h3 class="card__title">${item.title}</h3>
-            <p class="card__text">${item.text}</p>
-          </div>
-        </article>
-      `
-    )
-    .join("");
-
-  const mastersCards = services.masters.items
-    .map(
-      (item) => `
-        <article class="card master-card">
-          ${renderIcon(item.icon)}
-          <div>
-            <h3 class="card__title">${item.title}</h3>
-            <p class="card__text">${item.text}</p>
-          </div>
-        </article>
-      `
-    )
-    .join("");
-
-  const activities = services.activities.items.map((item) => `<li>${item}</li>`).join("");
-  const terms = services.organizerTerms.items.map((item) => `<li>${item}</li>`).join("");
 
   const content = `
     <section class="page-hero">
@@ -553,47 +655,183 @@ function renderServices() {
       <div class="page-subtitle">Поддержка организаторов, сервис для гостей и мероприятия.</div>
     </section>
     <section class="section">
+      <h2 class="section-title">${services.extras.title}</h2>
+      <div class="service-grid">
+        ${extras}
+      </div>
+    </section>
+    <section class="section">
       <h2 class="section-title">${services.organizerSupport.title}</h2>
       <div class="section-grid">
         ${supportCards}
       </div>
     </section>
-    <section class="section">
-      <h2 class="section-title">${services.guestServices.title}</h2>
-      <div class="section-grid">
-        ${guestCards}
-      </div>
-    </section>
-    <section class="section">
-      <h2 class="section-title">${services.masters.title}</h2>
-      <div class="section-grid">
-        ${mastersCards}
-      </div>
-      <div class="cta-row">
-        <button class="btn btn--ghost btn--small" data-nav=\"#/practices\">Смотреть полный каталог</button>
-      </div>
-    </section>
-    <section class="card card--strong">
-      <h2 class="section-title">${services.activities.title}</h2>
-      <ul class="list">${activities}</ul>
-    </section>
-    <section class="card card--strong">
-      <h2 class="section-title">${services.organizerTerms.title}</h2>
-      <ul class="list">${terms}</ul>
-    </section>
     <div class="cta-panel">
       <div>
-        <h2 class="section-title">Нужна помощь с программой?</h2>
-        <div class="section-subtitle">Подберем практики и мастеров под формат вашей группы.</div>
+        <h2 class="section-title">Нужна помощь с услугами?</h2>
+        <div class="section-subtitle">Подберем формат и условия под вашу группу.</div>
       </div>
       <div class="cta-panel__actions">
-        <button class="btn btn--primary" data-nav=\"#/request/practices\">Подобрать практики</button>
-        <button class="btn btn--ghost" data-nav=\"#/request/turnkey\">Оставить заявку организатора</button>
+        <button class="btn btn--primary" data-nav=\"#/request/service\">Записаться</button>
+        <button class="btn btn--ghost" data-nav=\"#/contact\">Связаться</button>
       </div>
     </div>
   `;
 
   return renderShell({ content, activeTab: "services" });
+}
+
+function renderServiceDetail(serviceId) {
+  const { services } = state.data;
+  const service = services.extras.items.find((item) => item.id === serviceId);
+  if (!service) {
+    return renderNotFound();
+  }
+
+  const carousel = renderCarousel(service.photos, service.title);
+  const includes = (service.includes || []).map((item) => `<li>${item}</li>`).join("");
+  const params = (service.params || [])
+    .map((param) => `<span class="pill">${param.label}: ${param.value}</span>`)
+    .join("");
+  const faq = (service.faq || [])
+    .map(
+      (item) => `
+        <details class="accordion-item">
+          <summary>${item.question}</summary>
+          <div class="accordion-content">${item.answer}</div>
+        </details>
+      `
+    )
+    .join("");
+
+  const content = `
+    <section class="page-hero">
+      <h1 class="page-title">${service.title}</h1>
+      <div class="page-subtitle">${service.short}</div>
+    </section>
+    <section class="card card--strong">
+      ${carousel}
+    </section>
+    <section class="card">
+      <h2 class="section-title">Описание</h2>
+      <p class="card__text">${service.description}</p>
+      <div class="pill-row">${params}</div>
+    </section>
+    <section class="card">
+      <h2 class="section-title">Что входит</h2>
+      <ul class="list">${includes}</ul>
+    </section>
+    ${faq ? `<section class=\"card\"><h2 class=\"section-title\">FAQ</h2>${faq}</section>` : ""}
+    <div class="cta-panel">
+      <div>
+        <h2 class="section-title">Записаться / Узнать условия</h2>
+        <div class="section-subtitle">Ответим по формату и стоимости.</div>
+      </div>
+      <div class="cta-panel__actions">
+        <button class="btn btn--primary" data-nav=\"#/request/service?serviceId=${service.id}\">Записаться</button>
+        <button class="btn btn--ghost" data-nav=\"#/contact\">Связаться</button>
+      </div>
+    </div>
+  `;
+
+  return {
+    ...renderShell({ content, activeTab: "services" }),
+    bind: bindCarousels
+  };
+}
+
+function renderMasters() {
+  const { masters } = state.data;
+  const cards = masters.items
+    .map((master) => {
+      const avatar = master.photos?.[0]
+        ? `<img src="${master.photos[0]}" alt="${master.name}" />`
+        : `<span class="avatar__placeholder">${master.name.charAt(0)}</span>`;
+      const tags = (master.tags || []).map((tag) => `<span class="tag">${tag}</span>`).join("");
+      return `
+        <article class="card master-card">
+          <div class="master-card__header">
+            <div class="avatar">${avatar}</div>
+            <div>
+              <h3 class="card__title">${master.name}</h3>
+              <div class="card__text">${master.role}</div>
+            </div>
+          </div>
+          <div class="card__text clamp-2">${master.bioShort}</div>
+          <div class="tag-row">${tags}</div>
+          <div class="master-card__actions">
+            <div class="socials">${renderSocialLinks(master.socials)}</div>
+            <button class="btn btn--primary btn--small" data-nav=\"#/master/${master.id}\">Написать</button>
+          </div>
+        </article>
+      `;
+    })
+    .join("");
+
+  const content = `
+    <section class="page-hero">
+      <h1 class="page-title">${masters.title}</h1>
+      <div class="page-subtitle">Команда специалистов и локальные мастера.</div>
+    </section>
+    <section class="section">
+      <div class="section-grid">
+        ${cards}
+      </div>
+    </section>
+  `;
+
+  return renderShell({ content, activeTab: "masters" });
+}
+
+function renderMasterDetail(masterId) {
+  const { masters, services } = state.data;
+  const master = masters.items.find((item) => item.id === masterId);
+  if (!master) {
+    return renderNotFound();
+  }
+
+  const carousel = renderCarousel(master.photos, master.name);
+  const tags = (master.tags || []).map((tag) => `<span class="tag">${tag}</span>`).join("");
+  const linked = (master.linkedServices || [])
+    .map((id) => services.extras.items.find((item) => item.id === id))
+    .filter(Boolean)
+    .map((service) => `<li>${service.title}</li>`)
+    .join("");
+
+  const content = `
+    <section class="page-hero">
+      <h1 class="page-title">${master.name}</h1>
+      <div class="page-subtitle">${master.role}</div>
+      <div class="tag-row">${tags}</div>
+    </section>
+    <section class="card card--strong">
+      ${carousel}
+    </section>
+    <section class="card">
+      <h2 class="section-title">О мастере</h2>
+      <p class="card__text">${master.bioFull}</p>
+    </section>
+    ${linked ? `<section class=\"card\"><h2 class=\"section-title\">Услуги мастера</h2><ul class=\"list\">${linked}</ul></section>` : ""}
+    <section class="card">
+      <h2 class="section-title">Контакты</h2>
+      <div class="socials">${renderSocialLinks(master.socials)}</div>
+    </section>
+    <div class="cta-panel">
+      <div>
+        <h2 class="section-title">Связаться с мастером</h2>
+        <div class="section-subtitle">Ответим по доступности и формату.</div>
+      </div>
+      <div class="cta-panel__actions">
+        <button class="btn btn--primary" data-nav=\"#/request/master?masterId=${master.id}\">Запросить запись</button>
+        <button class="btn btn--ghost" data-nav=\"#/contact\">Связаться</button>
+      </div>
+    </div>
+  `;
+
+  return {
+    ...renderShell({ content, activeTab: "masters" }),
+    bind: bindCarousels
+  };
 }
 
 function renderPractices() {
@@ -689,72 +927,6 @@ function renderPractices() {
   return {
     ...renderShell({ content, activeTab: "services" }),
     bind: bindPracticeFilters
-  };
-}
-
-function renderCalendar() {
-  const { calendar, app } = state.data;
-  const { year, month } = state.ui.calendarMonth;
-  const matrix = buildMonthMatrix(year, month);
-
-  const daysMarkup = matrix
-    .map((day) => {
-      const status = day.inMonth ? getStatusForDate(day.date, calendar) : null;
-      const classes = ["calendar-day"];
-      if (!day.inMonth) classes.push("calendar-day--muted");
-      if (day.inMonth && isSelectedDay(day.date)) classes.push("calendar-day--selected");
-      if (day.inMonth && isRangeDay(day.date)) classes.push("calendar-day--range");
-      const statusAttr = status !== null ? `data-status="${status}"` : "";
-      return `
-        <div class="${classes.join(" ")}" ${statusAttr} data-date="${day.dateStr}">
-          <div>${day.date.getDate()}</div>
-          ${day.inMonth ? `<div class="badge">${calendar.statusRules[status]}</div>` : ""}
-        </div>
-      `;
-    })
-    .join("");
-
-  const rangeLabel = state.ui.selectedRange.start
-    ? state.ui.selectedRange.end
-      ? `${state.ui.selectedRange.start} — ${state.ui.selectedRange.end}`
-      : state.ui.selectedRange.start
-    : "Выберите даты";
-
-  const content = `
-    <section class="page-hero">
-      <h1 class="page-title">Даты</h1>
-      <div class="page-subtitle">Центр принимает до двух групп одновременно.</div>
-      ${app.season ? `<div class="note">${app.season}</div>` : ""}
-    </section>
-    <section class="card card--strong">
-      <div class="calendar-header">
-        <button class="btn btn--ghost btn--icon" data-calendar="prev">←</button>
-        <div class="calendar-title">${monthNames[month]} ${year}</div>
-        <button class="btn btn--ghost btn--icon" data-calendar="next">→</button>
-      </div>
-      <div class="calendar-grid">
-        ${weekdayNames.map((name) => `<div class="calendar-weekday">${name}</div>`).join("")}
-        ${daysMarkup}
-      </div>
-      <div class="calendar-legend">
-        <span class="legend-item"><span class="legend-dot legend-dot--green"></span>${calendar.statusRules[0]}</span>
-        <span class="legend-item"><span class="legend-dot legend-dot--yellow"></span>${calendar.statusRules[1]}</span>
-        <span class="legend-item"><span class="legend-dot legend-dot--red"></span>${calendar.statusRules[2]}</span>
-      </div>
-    </section>
-    <section class="card">
-      <h3 class="card__title">Выбранный диапазон</h3>
-      <div class="card__text">${rangeLabel}</div>
-      <div class="cta-row">
-        <button class="btn btn--primary" data-nav=\"#/request/accommodation${buildDateQuery()}\">${app.cta.accommodation}</button>
-        <button class="btn btn--ghost" data-nav=\"#/request/turnkey${buildDateQuery()}\">Оставить заявку организатора</button>
-      </div>
-    </section>
-  `;
-
-  return {
-    ...renderShell({ content, activeTab: "calendar" }),
-    bind: bindCalendar
   };
 }
 
@@ -963,8 +1135,8 @@ function renderContact() {
         <div class="section-subtitle">Заполните форму — мы свяжемся с вами лично.</div>
       </div>
       <div class="cta-panel__actions">
-        <button class="btn btn--primary" data-nav="#/request/turnkey">Оставить заявку организатора</button>
-        <button class="btn btn--ghost" data-nav="#/request/accommodation">Запросить даты</button>
+        <button class="btn btn--primary" data-nav="#/request/dates">Запросить даты</button>
+        <button class="btn btn--ghost" data-nav="#/request/room">Запросить стоимость</button>
       </div>
     </div>
   `;
@@ -975,12 +1147,13 @@ function renderContact() {
 function renderSuccess() {
   const afterSubmit = state.data.forms.afterSubmit;
   const message = state.ui.lastSuccess || afterSubmit;
+  const backRoute = state.ui.lastRoute || "#/home";
   const content = `
     <div class="modal">
       <div class="modal__card">
         <h2 class="section-title">${message.title}</h2>
         <div class="card__text">${message.message}</div>
-        <button class="btn btn--primary" data-nav="#/">На главную</button>
+        <button class="btn btn--primary" data-nav="${backRoute}">Ок</button>
       </div>
     </div>
   `;
@@ -1010,14 +1183,14 @@ function renderRequestForm(type, query) {
     return renderNotFound();
   }
 
-  const { forms, practices, shop } = state.data;
+  const { forms, practices, shop, accommodation, services, masters } = state.data;
   const formConfig = forms.requests[type];
   const commonFields = forms.common.fields;
   const fields = mergeFields(formConfig.fields, commonFields);
   const prefill = buildPrefill(type, query);
 
   const fieldsMarkup = fields
-    .map((field) => renderField(field, prefill, practices, shop))
+    .map((field) => renderField(field, prefill, { practices, shop, accommodation, services, masters }))
     .join("");
 
   const foodEstimate = (type === "accommodation" || type === "turnkey")
@@ -1043,13 +1216,24 @@ function renderRequestForm(type, query) {
   };
 }
 
-function renderField(field, prefill, practices, shop) {
+function renderField(field, prefill, context) {
   const value = prefill[field.id];
   const label = `${field.label}${field.required ? " *" : ""}`;
   const id = `field_${field.id}`;
 
   if (field.type === "select") {
-    const options = field.options
+    let options = field.options || [];
+    if (field.optionsSource === "accommodation") {
+      options = context.accommodation.types.map((item) => ({ value: item.id, label: item.title }));
+    }
+    if (field.optionsSource === "services") {
+      options = context.services.extras.items.map((item) => ({ value: item.id, label: item.title }));
+    }
+    if (field.optionsSource === "masters") {
+      options = context.masters.items.map((item) => ({ value: item.id, label: item.name }));
+    }
+
+    const optionsMarkup = options
       .map(
         (option) => `
           <option value="${option.value}" ${value === option.value ? "selected" : ""}>
@@ -1064,7 +1248,7 @@ function renderField(field, prefill, practices, shop) {
         <label for="${id}">${label}</label>
         <select id="${id}" name="${field.id}">
           <option value="">Выберите</option>
-          ${options}
+          ${optionsMarkup}
         </select>
       </div>
     `;
@@ -1073,10 +1257,10 @@ function renderField(field, prefill, practices, shop) {
   if (field.type === "multiselect") {
     let options = field.options || [];
     if (field.dataSource === "practices.json") {
-      options = practices.practices.map((item) => ({ value: item.id, label: item.title }));
+      options = context.practices.practices.map((item) => ({ value: item.id, label: item.title }));
     }
     if (field.optionsSource === "shop.json") {
-      options = shop.items.map((item) => ({ value: item.id, label: item.label }));
+      options = context.shop.items.map((item) => ({ value: item.id, label: item.label }));
     }
 
     const selected = Array.isArray(value) ? value : value ? [value] : [];
@@ -1107,6 +1291,30 @@ function renderField(field, prefill, practices, shop) {
       <div class="field">
         <label for="${id}">${label}</label>
         <textarea id="${id}" name="${field.id}" placeholder="${field.placeholder || ""}">${value || ""}</textarea>
+      </div>
+    `;
+  }
+
+  if (field.type === "segmented") {
+    const options = field.options || [];
+    const currentValue = value || "";
+    const buttons = options
+      .map(
+        (option) => `
+          <button type="button" class="segment ${currentValue === option.value ? "segment--active" : ""}" data-segment="${option.value}" data-segment-group="${field.id}">
+            ${option.label}
+          </button>
+        `
+      )
+      .join("");
+
+    return `
+      <div class="field">
+        <label>${label}</label>
+        <div class="segment-group">
+          ${buttons}
+          <input type="hidden" name="${field.id}" value="${currentValue}" />
+        </div>
       </div>
     `;
   }
@@ -1155,6 +1363,21 @@ function buildPrefill(type, query) {
     prefill.guestsCount = guests;
   }
 
+  const roomId = query.get("roomId");
+  if (roomId) {
+    prefill.roomId = roomId;
+  }
+
+  const serviceId = query.get("serviceId");
+  if (serviceId) {
+    prefill.serviceId = serviceId;
+  }
+
+  const masterId = query.get("masterId");
+  if (masterId) {
+    prefill.masterId = masterId;
+  }
+
   return prefill;
 }
 
@@ -1175,24 +1398,6 @@ function bindPracticeFilters() {
       const group = chip.getAttribute("data-filter-group");
       const value = chip.getAttribute("data-filter-value") || null;
       state.filters[group] = value || null;
-      render();
-    });
-  });
-}
-
-function bindCalendar() {
-  document.querySelectorAll("[data-calendar]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const direction = button.getAttribute("data-calendar");
-      changeCalendarMonth(direction === "next" ? 1 : -1);
-    });
-  });
-
-  document.querySelectorAll("[data-date]").forEach((cell) => {
-    cell.addEventListener("click", () => {
-      const dateStr = cell.getAttribute("data-date");
-      if (!dateStr) return;
-      updateSelectedRange(dateStr);
       render();
     });
   });
@@ -1229,10 +1434,47 @@ function bindGalleryTabs() {
   });
 }
 
+function bindCarousels() {
+  document.querySelectorAll("[data-carousel]").forEach((carousel) => {
+    const track = carousel.querySelector(".carousel__track");
+    const slides = Array.from(carousel.querySelectorAll(".carousel__slide"));
+    const dots = Array.from(carousel.querySelectorAll("[data-carousel-dot]"));
+    if (!track || slides.length === 0) return;
+
+    let index = 0;
+
+    const update = () => {
+      track.style.transform = `translateX(-${index * 100}%)`;
+      dots.forEach((dot, dotIndex) => {
+        dot.classList.toggle("active", dotIndex === index);
+      });
+    };
+
+    carousel.querySelector("[data-carousel-prev]")?.addEventListener("click", () => {
+      index = index === 0 ? slides.length - 1 : index - 1;
+      update();
+    });
+
+    carousel.querySelector("[data-carousel-next]")?.addEventListener("click", () => {
+      index = index === slides.length - 1 ? 0 : index + 1;
+      update();
+    });
+
+    dots.forEach((dot) => {
+      dot.addEventListener("click", () => {
+        index = Number(dot.getAttribute("data-carousel-dot")) || 0;
+        update();
+      });
+    });
+  });
+}
+
 function bindRequestForm(type, fields) {
   const form = document.getElementById("requestForm");
   const errors = document.getElementById("formErrors");
   const submitButton = form.querySelector("button[type=submit]");
+
+  bindSegments(form);
 
   if (type === "accommodation" || type === "turnkey") {
     bindFoodEstimateInForm(form);
@@ -1266,6 +1508,7 @@ function bindRequestForm(type, fields) {
     try {
       await submitRequest(type, payload);
       localStorage.setItem(lastKey, String(Date.now()));
+      state.ui.lastRoute = window.location.hash || "#/home";
       state.ui.lastSuccess = state.data.forms.afterSubmit;
       window.location.hash = "#/success";
     } catch (error) {
@@ -1275,6 +1518,23 @@ function bindRequestForm(type, fields) {
       submitButton.disabled = false;
       submitButton.textContent = "Отправить заявку";
     }
+  });
+}
+
+function bindSegments(form) {
+  form.querySelectorAll("[data-segment-group]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const group = button.getAttribute("data-segment-group");
+      const value = button.getAttribute("data-segment");
+      if (!group) return;
+      const hidden = form.querySelector(`input[name=\"${group}\"]`);
+      if (hidden) {
+        hidden.value = value;
+      }
+      form.querySelectorAll(`[data-segment-group=\"${group}\"]`).forEach((item) => {
+        item.classList.toggle("segment--active", item === button);
+      });
+    });
   });
 }
 
@@ -1393,87 +1653,6 @@ function matchesFilters(practice) {
   if (type && practice.type !== type) return false;
   if (location && !practice.location.includes(location)) return false;
   return true;
-}
-
-function buildMonthMatrix(year, month) {
-  const firstDay = new Date(year, month, 1);
-  const startOffset = (firstDay.getDay() + 6) % 7;
-  const startDate = new Date(year, month, 1 - startOffset);
-  const days = [];
-  for (let i = 0; i < 42; i += 1) {
-    const date = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + i);
-    days.push({
-      date,
-      dateStr: formatDateInput(date),
-      inMonth: date.getMonth() === month
-    });
-  }
-  return days;
-}
-
-function getStatusForDate(date, calendar) {
-  const groups = calendar.bookings.reduce((total, booking) => {
-    const from = parseDate(booking.from);
-    const to = parseDate(booking.to);
-    if (date >= from && date <= to) {
-      return total + (booking.groups || 1);
-    }
-    return total;
-  }, 0);
-  return Math.min(groups, calendar.maxGroups);
-}
-
-function updateSelectedRange(dateStr) {
-  const { selectedRange } = state.ui;
-  if (!selectedRange.start || selectedRange.end) {
-    selectedRange.start = dateStr;
-    selectedRange.end = null;
-    return;
-  }
-  if (dateStr < selectedRange.start) {
-    selectedRange.end = selectedRange.start;
-    selectedRange.start = dateStr;
-  } else {
-    selectedRange.end = dateStr;
-  }
-}
-
-function isSelectedDay(date) {
-  const { start, end } = state.ui.selectedRange;
-  const dateStr = formatDateInput(date);
-  return dateStr === start || dateStr === end;
-}
-
-function isRangeDay(date) {
-  const { start, end } = state.ui.selectedRange;
-  if (!start || !end) return false;
-  const dateStr = formatDateInput(date);
-  return dateStr > start && dateStr < end;
-}
-
-function changeCalendarMonth(delta) {
-  const { year, month } = state.ui.calendarMonth;
-  const next = new Date(year, month + delta, 1);
-  state.ui.calendarMonth = { year: next.getFullYear(), month: next.getMonth() };
-  render();
-}
-
-function buildDateQuery() {
-  const { start, end } = state.ui.selectedRange;
-  if (!start) return "";
-  const params = new URLSearchParams();
-  params.set("from", start);
-  if (end) params.set("to", end);
-  return `?${params.toString()}`;
-}
-
-function buildDatesForPracticesQuery() {
-  const { start, end } = state.ui.selectedRange;
-  if (!start) return "";
-  const params = new URLSearchParams();
-  params.set("from", start);
-  if (end) params.set("to", end);
-  return `?${params.toString()}`;
 }
 
 function getGalleryPreviewItems(gallery, limit) {
