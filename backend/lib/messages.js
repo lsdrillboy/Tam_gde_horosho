@@ -83,7 +83,9 @@ function getInterestLabels(ids) {
     accommodation: "проживание",
     food: "питание",
     practices: "практики",
-    excursions: "экскурсии"
+    excursions: "экскурсии",
+    hall: "зал для практик",
+    services: "доп. услуги"
   };
   if (!Array.isArray(ids) || ids.length === 0) return [];
   return ids.map((id) => map[id] || id);
@@ -136,7 +138,7 @@ function buildTurnkeyMessage(payload, content) {
 
   return [
     signature,
-    "Тип запроса: Тур под ключ",
+    "Тип запроса: Заявка организатора",
     `Даты: ${valueOrNotProvided(payload.dateFrom)} — ${valueOrNotProvided(payload.dateTo)}`,
     `Количество гостей: ${valueOrNotProvided(payload.guestsCount)}`,
     "",

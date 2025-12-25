@@ -34,7 +34,7 @@
   },
   "requests": {
     "accommodation": {
-      "title": "Заявка: Размещение",
+      "title": "Запросить даты",
       "fields": [
         {
           "id": "dateFrom",
@@ -180,7 +180,7 @@
       ]
     },
     "turnkey": {
-      "title": "Заявка: Тур под ключ",
+      "title": "Заявка организатора",
       "fields": [
         {
           "id": "dateFrom",
@@ -196,7 +196,7 @@
         },
         {
           "id": "guestsCount",
-          "label": "Количество гостей",
+          "label": "Количество участников",
           "type": "number",
           "required": true,
           "min": 1
@@ -213,16 +213,16 @@
               "label": "Проживание"
             },
             {
+              "value": "hall",
+              "label": "Зал для практик"
+            },
+            {
               "value": "food",
               "label": "Питание"
             },
             {
-              "value": "practices",
-              "label": "Практики"
-            },
-            {
-              "value": "excursions",
-              "label": "Экскурсии"
+              "value": "services",
+              "label": "Доп. услуги"
             }
           ]
         },
@@ -293,12 +293,6 @@
           "label": "Комментарий к допам",
           "type": "textarea",
           "required": false
-        },
-        {
-          "id": "organizerComment",
-          "label": "Комментарий организатора",
-          "type": "textarea",
-          "required": false
         }
       ]
     },
@@ -322,7 +316,7 @@
     }
   },
   "afterSubmit": {
-    "title": "Заявка принята",
-    "message": "Администратор скоро свяжется с вами."
+    "title": "Заявка отправлена",
+    "message": "Менеджер свяжется с вами в ближайшее время."
   }
 }
