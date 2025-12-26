@@ -3,17 +3,366 @@
     {
       "id": "rooms",
       "title": "Номера",
-      "items": []
+      "items": [
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/cottage-8/1746362246569.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/cottage-8/1746362246574.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/cottage-8/1746362246579.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/cottage-8/1746362246584.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/cottage-8/1750169324106.jpg"
+        },
+        {
+          "type": "video",
+          "src": "assets/gallery/rooms/cottage-8/InShot_20251224_170924611.mp4"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouse/1746363056793.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouse/1746363082358.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouse/1746363187861.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouse/1746363216564.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouse/1746363255650.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouse/1746363298150.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouse/1746363313177.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouse/1746363339310.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouse/1746363358063.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouse/1747651115962.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouse/1747651115967.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouse/1747651115972.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouse/IMG_20250717_103817.jpg"
+        },
+        {
+          "type": "video",
+          "src": "assets/gallery/rooms/townhouse/InShot_20251212_165655500.mp4"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1747652835193.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1747652835197.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1747652835201.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1747652835205.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1747652835209.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1747652835214.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1747652835219.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1747652835223.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1747652835227.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1747652835231.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1747652835236.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1750614913244.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1750614913252.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1750614913257.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1750614913263.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1750614913268.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1750614913275.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1750614913280.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1750614913286.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1750614913291.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1750614913296.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1750614913302.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1750614913309.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1750614913319.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1750614913326.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1750614913333.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1750614913340.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1750614913347.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1750614913355.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1750614913363.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1750614913373.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/extra-rooms/1750614913387.jpg"
+        }
+      ]
     },
     {
       "id": "practice-hall",
       "title": "Зал для практик",
-      "items": []
+      "items": [
+        {
+          "type": "image",
+          "src": "assets/gallery/practice-hall/1747651216818.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/practice-hall/1747651216825.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/practice-hall/1747651216831.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/practice-hall/1747651381802.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/practice-hall/1747651381806.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/practice-hall/1747651381810.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/practice-hall/1747651381814.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/practice-hall/1747651381818.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/practice-hall/1747651381822.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/practice-hall/1747651381827.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/practice-hall/1747651381832.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/practice-hall/1747651381836.jpg"
+        },
+        {
+          "type": "video",
+          "src": "assets/gallery/practice-hall/InShot_20251211_191247435.mp4"
+        },
+        {
+          "type": "video",
+          "src": "assets/gallery/practice-hall/VID_20250516_204503.mp4"
+        }
+      ]
     },
     {
       "id": "bath-lagoon",
       "title": "Баня и лагуна",
-      "items": []
+      "items": [
+        {
+          "type": "image",
+          "src": "assets/gallery/bath-lagoon/1747651163253.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/bath-lagoon/1747651163258.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/bath-lagoon/1747651163262.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/bath-lagoon/1747651163266.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/bath-lagoon/1747651163273.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/bath-lagoon/1747651163280.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/bath-lagoon/1747651163286.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/bath-lagoon/1747651163292.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/bath-lagoon/1747651163298.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/bath-lagoon/1747651163305.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/bath-lagoon/1747651163311.jpg"
+        },
+        {
+          "type": "video",
+          "src": "assets/gallery/bath-lagoon/InShot_20251224_165545245.mp4"
+        },
+        {
+          "type": "video",
+          "src": "assets/gallery/bath-lagoon/VID-20250131-WA0019.mp4"
+        }
+      ]
+    },
+    {
+      "id": "dining",
+      "title": "Столовая",
+      "items": [
+        {
+          "type": "image",
+          "src": "assets/gallery/dining/1753599198126.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/dining/1753599198133.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/dining/1753599198140.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/dining/1753599198147.jpg"
+        },
+        {
+          "type": "video",
+          "src": "assets/gallery/dining/InShot_20251224_164722816.mp4"
+        },
+        {
+          "type": "video",
+          "src": "assets/gallery/dining/VID_20250727_125429.mp4"
+        }
+      ]
     },
     {
       "id": "nature",

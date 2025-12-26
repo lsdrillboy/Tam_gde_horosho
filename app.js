@@ -463,7 +463,8 @@ function renderAccommodation() {
     })
     .join("");
 
-  const formatsMarkup = accommodation.formats
+  const formats = Array.isArray(accommodation.formats) ? accommodation.formats : [];
+  const formatsMarkup = formats
     .map(
       (format) => `
         <div class="card format-card">
@@ -473,6 +474,16 @@ function renderAccommodation() {
       `
     )
     .join("");
+  const formatsSection = formats.length
+    ? `
+    <section class="section">
+      <h2 class="section-title">Варианты размещения</h2>
+      <div class="section-grid">
+        ${formatsMarkup}
+      </div>
+    </section>
+  `
+    : "";
 
   const hall = accommodation.practiceHall;
   const hallFeatures = hall.features.map((feature) => `<span class="pill">${feature}</span>`).join("");
@@ -514,12 +525,7 @@ function renderAccommodation() {
         ${typesMarkup}
       </div>
     </section>
-    <section class="section">
-      <h2 class="section-title">Варианты размещения</h2>
-      <div class="section-grid">
-        ${formatsMarkup}
-      </div>
-    </section>
+    ${formatsSection}
     <section class="card card--strong">
       <div class="section-header">
         <div>

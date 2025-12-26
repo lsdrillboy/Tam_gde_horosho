@@ -22,7 +22,19 @@
           }
         ],
         "includes": ["Парная", "Чайная пауза", "Полотенца"],
-        "photos": [],
+        "photos": [
+          "assets/gallery/bath-lagoon/1747651163253.jpg",
+          "assets/gallery/bath-lagoon/1747651163258.jpg",
+          "assets/gallery/bath-lagoon/1747651163262.jpg",
+          "assets/gallery/bath-lagoon/1747651163266.jpg",
+          "assets/gallery/bath-lagoon/1747651163273.jpg",
+          "assets/gallery/bath-lagoon/1747651163280.jpg",
+          "assets/gallery/bath-lagoon/1747651163286.jpg",
+          "assets/gallery/bath-lagoon/1747651163292.jpg",
+          "assets/gallery/bath-lagoon/1747651163298.jpg",
+          "assets/gallery/bath-lagoon/1747651163305.jpg",
+          "assets/gallery/bath-lagoon/1747651163311.jpg"
+        ],
         "faq": [
           {
             "question": "Можно добавить программу парения?",
