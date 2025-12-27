@@ -151,10 +151,11 @@ button {
   font-size: clamp(28px, 4vw, 36px);
   margin: 0;
   overflow-wrap: anywhere;
+  color: var(--primary-dark);
 }
 
 .page-subtitle {
-  color: var(--muted);
+  color: var(--primary);
   max-width: 620px;
   overflow-wrap: anywhere;
 }
@@ -169,10 +170,11 @@ button {
   font-size: 22px;
   margin: 0;
   overflow-wrap: anywhere;
+  color: var(--primary-dark);
 }
 
 .section-subtitle {
-  color: var(--muted);
+  color: var(--primary);
   overflow-wrap: anywhere;
 }
 
@@ -216,6 +218,7 @@ button {
   font-size: 18px;
   margin: 0;
   overflow-wrap: anywhere;
+  color: var(--primary-dark);
 }
 
 .card__text {
@@ -307,6 +310,7 @@ button {
 .hero__subtitle {
   font-weight: 600;
   font-size: 16px;
+  color: var(--primary-dark);
 }
 
 .hero__description {
@@ -324,6 +328,7 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   padding: 12px 18px;
   border-radius: 999px;
   border: 1px solid transparent;
@@ -340,10 +345,9 @@ button {
 }
 
 .btn--premium {
-  background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-soft));
-  color: #3a2b18;
-  border: 1px solid rgba(216, 192, 138, 0.55);
-  box-shadow: 0 12px 24px rgba(125, 98, 40, 0.18);
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 14px 26px rgba(126, 160, 107, 0.35);
 }
 
 .btn--secondary {
@@ -354,8 +358,8 @@ button {
 
 .btn--ghost {
   background: transparent;
-  border: 1px solid var(--line);
-  color: var(--text);
+  border: 1px solid rgba(126, 160, 107, 0.4);
+  color: var(--primary-dark);
 }
 
 .btn--text {
@@ -1100,6 +1104,31 @@ button {
   gap: 8px;
 }
 
+.list--bulleted,
+.list--numbered {
+  list-style-position: outside;
+  padding-left: 18px;
+}
+
+.list--bulleted {
+  list-style-type: disc;
+}
+
+.list--numbered {
+  list-style-type: decimal;
+}
+
+.list--bulleted li,
+.list--numbered li {
+  display: list-item;
+}
+
+.list--bulleted li::marker,
+.list--numbered li::marker {
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
 .service-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -1438,6 +1467,60 @@ button {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.massage-card {
+  gap: 12px;
+}
+
+.massage-card__lead {
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+.massage-card__section {
+  display: grid;
+  gap: 6px;
+}
+
+.massage-card__subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: var(--primary-dark);
+}
+
+.massage-card__step-title {
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+.massage-card__nested {
+  margin-top: 6px;
+  padding-left: 18px;
+}
+
+.massage-card__prices {
+  display: grid;
+  gap: 10px;
+}
+
+.massage-card__price {
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+  background: rgba(126, 160, 107, 0.1);
+  display: grid;
+  gap: 4px;
+}
+
+.massage-card__price-title {
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+.massage-card__cta {
+  font-weight: 600;
+  color: var(--primary-dark);
 }
 
 .alert-card {

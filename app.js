@@ -198,6 +198,12 @@ function parseRoute() {
   return { path, query };
 }
 
+function normalizeRoute(route) {
+  if (!route) return "/home";
+  const normalized = route.replace(/^#/, "");
+  return normalized || "/home";
+}
+
 function render() {
   if (!state.data.app) {
     appRoot.innerHTML = "<div class=\"loading\">Загрузка…</div>";
@@ -261,7 +267,21 @@ function renderShell({ content, headerActions = [], activeTab }) {
   const brandTitle = state.data.home?.hero?.title || state.data.app?.name || "";
   const brandKicker = state.data.home?.hero?.kicker || "Ретритный центр";
   const resolvedTab = activeTab || getActiveTab(parseRoute().path);
-  const actions = headerActions
+  const { path } = parseRoute();
+  const showBack = path !== "/" && path !== "/home";
+  const backRoute = normalizeRoute(state.ui.lastRoute || "/home");
+  const actions = [
+    ...(showBack
+      ? [
+          {
+            href: backRoute,
+            label: `${renderIcon("back")}Назад`,
+            variant: "btn--ghost"
+          }
+        ]
+      : []),
+    ...headerActions
+  ]
     .map(
       (action) => `
         <button class="btn ${action.variant || "btn--ghost"} btn--small" data-nav="#${action.href}">
@@ -744,12 +764,113 @@ function renderServiceDetail(serviceId) {
       `
     )
     .join("");
+  const detailIntro = service.detail?.intro
+    ? `
+      <section class="card">
+        <h2 class="section-title">${service.detail.intro.title}</h2>
+        <div class="section-subtitle">${service.detail.intro.subtitle}</div>
+      </section>
+    `
+    : "";
+  const programCards = (service.detail?.programs || [])
+    .map((program) => {
+      const paragraphs = (program.paragraphs || [])
+        .map((text) => `<p class="card__text">${text}</p>`)
+        .join("");
+      const about = program.about
+        ? `
+          <div class="massage-card__section">
+            <h3 class="massage-card__subtitle">${program.about.title}</h3>
+            ${program.about.intro ? `<div class="card__text">${program.about.intro}</div>` : ""}
+            <ul class="list list--bulleted">
+              ${(program.about.items || []).map((item) => `<li>${item}</li>`).join("")}
+            </ul>
+          </div>
+        `
+        : "";
+      const session = program.session
+        ? `
+          <div class="massage-card__section">
+            <h3 class="massage-card__subtitle">${program.session.title}</h3>
+            <ol class="list list--numbered">
+              ${(program.session.steps || [])
+                .map((step) => {
+                  const items = (step.items || []).length
+                    ? `<ul class="list list--bulleted massage-card__nested">
+                        ${step.items.map((item) => `<li>${item}</li>`).join("")}
+                      </ul>`
+                    : "";
+                  return `
+                    <li>
+                      <span class="massage-card__step-title">${step.title}</span>
+                      ${step.text ? `<div class="card__text">${step.text}</div>` : ""}
+                      ${items}
+                    </li>
+                  `;
+                })
+                .join("")}
+            </ol>
+          </div>
+        `
+        : "";
+      const results = program.results
+        ? `
+          <div class="massage-card__section">
+            <h3 class="massage-card__subtitle">${program.results.title}</h3>
+            <ul class="list list--bulleted">
+              ${(program.results.items || []).map((item) => `<li>${item}</li>`).join("")}
+            </ul>
+          </div>
+        `
+        : "";
+      const prices = (program.prices || [])
+        .map(
+          (price) => `
+            <div class="massage-card__price">
+              <div class="massage-card__price-title">${price.label}</div>
+              ${price.note ? `<div class="card__text">${price.note}</div>` : ""}
+            </div>
+          `
+        )
+        .join("");
+      const contact = program.contact?.phone
+        ? `
+          <div class="massage-card__cta">
+            ${program.cta || "Записаться на программу"} ${program.contact.phone} ${program.contact.name || ""}
+          </div>
+        `
+        : "";
+      return `
+        <article class="practice-card massage-card">
+          <h3 class="practice-card__title">${program.title}</h3>
+          ${program.lead ? `<div class="massage-card__lead">${program.lead}</div>` : ""}
+          ${paragraphs}
+          ${about}
+          ${session}
+          ${results}
+          ${prices ? `<div class="massage-card__prices">${prices}</div>` : ""}
+          ${contact}
+        </article>
+      `;
+    })
+    .join("");
+  const programsSection = programCards
+    ? `
+      <section class="section">
+        <h2 class="section-title">Программы массажа</h2>
+        <div class="master-practices">
+          ${programCards}
+        </div>
+      </section>
+    `
+    : "";
 
   const content = `
     <section class="page-hero">
       <h1 class="page-title">${service.title}</h1>
       <div class="page-subtitle">${service.short}</div>
     </section>
+    ${detailIntro}
     <section class="card card--strong">
       ${carousel}
     </section>
@@ -758,6 +879,7 @@ function renderServiceDetail(serviceId) {
       <p class="card__text">${service.description}</p>
       <div class="pill-row">${params}</div>
     </section>
+    ${programsSection}
     <section class="card">
       <h2 class="section-title">Что входит</h2>
       <ul class="list">${includes}</ul>
@@ -804,7 +926,7 @@ function renderMasters() {
             ${anchor ? `<div class="master-card__anchor clamp-1">${anchor}</div>` : ""}
             ${priceLine ? `<div class="master-card__price">${priceLine}</div>` : ""}
             <div class="master-card__actions">
-              <button class="btn btn--premium btn--small" data-nav="${focusRoute}">${ctaLabel}</button>
+              <button class="btn btn--primary btn--small" data-nav="${focusRoute}">${ctaLabel}</button>
               <button class="btn btn--ghost btn--icon master-card__share" type="button" data-share-master="${master.id}" data-share-title="${master.name}" data-share-text="Мастер: ${master.name}" aria-label="Поделиться">
                 ${renderIcon("share")}
               </button>
@@ -878,7 +1000,7 @@ function renderMasterDetail(masterId, query = new URLSearchParams()) {
             route = buildRequestRoute("master", { masterId: master.id, comment: `Практика: ${practice.title}` });
           }
 
-          const variant = action.variant || (index === 0 ? "premium" : "ghost");
+          const variant = action.variant || (index === 0 ? "primary" : "ghost");
           const size = action.size === "normal" ? "" : "btn--small";
           return `
             <button class="btn btn--${variant} ${size}" data-nav="${route}">
@@ -916,10 +1038,6 @@ function renderMasterDetail(masterId, query = new URLSearchParams()) {
   const content = `
     <section class="master-hero ${heroImage ? "" : "master-hero--placeholder"}" ${heroImage ? `style="background-image: url('${heroImage}')"` : ""}>
       <div class="master-hero__actions">
-        <button class="btn btn--ghost btn--small master-hero__action" data-nav="#/masters">
-          ${renderIcon("back")}
-          Назад
-        </button>
         <button class="btn btn--ghost btn--icon master-hero__action" type="button" data-share-master="${master.id}" data-share-title="${master.name}" data-share-text="Мастер: ${master.name}" aria-label="Поделиться">
           ${renderIcon("share")}
         </button>
@@ -1281,13 +1399,13 @@ function renderContact() {
 function renderSuccess() {
   const afterSubmit = state.data.forms.afterSubmit;
   const message = state.ui.lastSuccess || afterSubmit;
-  const backRoute = state.ui.lastRoute || "#/home";
+  const backRoute = normalizeRoute(state.ui.lastRoute || "/home");
   const content = `
     <div class="modal">
       <div class="modal__card">
         <h2 class="section-title">${message.title}</h2>
         <div class="card__text">${message.message}</div>
-        <button class="btn btn--primary" data-nav="${backRoute}">Ок</button>
+        <button class="btn btn--primary" data-nav="#${backRoute}">Ок</button>
       </div>
     </div>
   `;
@@ -1527,6 +1645,7 @@ function bindNavigation() {
       event.stopPropagation();
       const target = node.getAttribute("data-nav");
       if (target) {
+        state.ui.lastRoute = normalizeRoute(window.location.hash || "#/home");
         window.location.hash = target.replace(/^#/, "");
       }
     });
@@ -1693,7 +1812,7 @@ function bindRequestForm(type, fields) {
     try {
       await submitRequest(type, payload);
       localStorage.setItem(lastKey, String(Date.now()));
-      state.ui.lastRoute = window.location.hash || "#/home";
+      state.ui.lastRoute = normalizeRoute(window.location.hash || "#/home");
       state.ui.lastSuccess = state.data.forms.afterSubmit;
       window.location.hash = "#/success";
     } catch (error) {
