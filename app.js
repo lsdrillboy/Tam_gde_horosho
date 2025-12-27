@@ -10,7 +10,8 @@ const state = {
   ui: {
     galleryAlbumId: null,
     lastSuccess: null,
-    lastRoute: null
+    lastRoute: null,
+    lightbox: null
   }
 };
 
@@ -204,6 +205,12 @@ function normalizeRoute(route) {
   return normalized || "/home";
 }
 
+function getActiveGalleryAlbum() {
+  const { gallery } = state.data;
+  if (!gallery?.albums?.length) return null;
+  return gallery.albums.find((album) => album.id === state.ui.galleryAlbumId) || gallery.albums[0];
+}
+
 function render() {
   if (!state.data.app) {
     appRoot.innerHTML = "<div class=\"loading\">Загрузка…</div>";
@@ -218,6 +225,7 @@ function render() {
   if (content.bind) {
     content.bind();
   }
+  bindLightbox();
 }
 
 function renderRoute(path, query) {
@@ -306,6 +314,7 @@ function renderShell({ content, headerActions = [], activeTab }) {
         </main>
       </div>
       ${renderTabBar(resolvedTab)}
+      ${renderLightbox()}
     `
   };
 }
@@ -1057,7 +1066,7 @@ function renderMasterDetail(masterId, query = new URLSearchParams()) {
     ${benefits ? `<section class="card"><h2 class="section-title">Что даёт метод</h2><div class="master-benefits">${benefits}</div></section>` : ""}
     ${practices ? `<section class="section" id="master-practices"><h2 class="section-title">Практики</h2><div class="master-practices">${practices}</div></section>` : ""}
     ${!practices && linked ? `<section class=\"card\"><h2 class=\"section-title\">Услуги мастера</h2><ul class=\"list\">${linked}</ul></section>` : ""}
-    ${contraindications ? `<section class="card alert-card"><details><summary><span>Важно: есть противопоказания</span><span class="alert-card__action">Смотреть список</span></summary><ul class="list">${contraindications}</ul></details></section>` : ""}
+    ${contraindications ? `<section class="card alert-card"><details><summary><span>Важно: есть противопоказания</span><span class="alert-card__action">Открыть список</span></summary><ul class="list">${contraindications}</ul></details></section>` : ""}
     <section class="card">
       <div class="section-header">
         <div>
@@ -1271,7 +1280,7 @@ function renderGallery(query = new URLSearchParams()) {
   if (requestedAlbum && gallery.albums.some((album) => album.id === requestedAlbum)) {
     state.ui.galleryAlbumId = requestedAlbum;
   }
-  const activeAlbum = gallery.albums.find((album) => album.id === state.ui.galleryAlbumId) || gallery.albums[0];
+  const activeAlbum = getActiveGalleryAlbum();
 
   const tabs = gallery.albums
     .map(
@@ -1283,12 +1292,12 @@ function renderGallery(query = new URLSearchParams()) {
     )
     .join("");
 
-  const items = activeAlbum.items.length
+  const items = activeAlbum?.items?.length
     ? activeAlbum.items
-        .map((item) => {
+        .map((item, index) => {
           const media = item.type === "video"
-            ? `<video src="${item.src}" controls preload="metadata"></video>`
-            : `<img src="${item.thumb || item.src}" alt="${item.caption || ""}" loading="lazy" />`;
+            ? `<video src="${item.src}" preload="metadata" playsinline data-gallery-open data-gallery-index="${index}"></video>`
+            : `<img src="${item.thumb || item.src}" alt="${item.caption || ""}" loading="lazy" data-gallery-open data-gallery-index="${index}" />`;
           return `
             <div class="gallery-item">
               ${media}
@@ -1314,6 +1323,62 @@ function renderGallery(query = new URLSearchParams()) {
     ...renderShell({ content, activeTab: "home" }),
     bind: bindGalleryTabs
   };
+}
+
+function openLightbox(items, index = 0) {
+  if (!items || items.length === 0) return;
+  const safeIndex = Math.max(0, Math.min(index, items.length - 1));
+  const scrollY = window.scrollY;
+  state.ui.lightbox = { items, index: safeIndex, scrollY };
+  render();
+  requestAnimationFrame(() => window.scrollTo(0, scrollY));
+}
+
+function closeLightbox() {
+  if (!state.ui.lightbox) return;
+  const scrollY = state.ui.lightbox.scrollY ?? window.scrollY;
+  state.ui.lightbox = null;
+  render();
+  requestAnimationFrame(() => window.scrollTo(0, scrollY));
+}
+
+function stepLightbox(direction) {
+  const lightbox = state.ui.lightbox;
+  if (!lightbox || !lightbox.items?.length) return;
+  const total = lightbox.items.length;
+  lightbox.index = (lightbox.index + direction + total) % total;
+  render();
+}
+
+function renderLightbox() {
+  const lightbox = state.ui.lightbox;
+  if (!lightbox || !lightbox.items?.length) return "";
+
+  const item = lightbox.items[lightbox.index];
+  const media = item.type === "video"
+    ? `<video src="${item.src}" controls playsinline></video>`
+    : `<img src="${item.src}" alt="${item.caption || ""}" />`;
+  const caption = item.caption ? `<div class="lightbox__caption">${item.caption}</div>` : "";
+
+  return `
+    <div class="lightbox" data-lightbox>
+      <div class="lightbox__backdrop" data-lightbox-close></div>
+      <div class="lightbox__panel" role="dialog" aria-modal="true">
+        <button class="lightbox__close" type="button" data-lightbox-close aria-label="Закрыть">×</button>
+        <button class="lightbox__nav lightbox__prev" type="button" data-lightbox-prev aria-label="Предыдущее">
+          ${renderIcon("back")}
+        </button>
+        <div class="lightbox__media">
+          ${media}
+        </div>
+        <button class="lightbox__nav lightbox__next" type="button" data-lightbox-next aria-label="Следующее">
+          ${renderIcon("back")}
+        </button>
+        <div class="lightbox__counter">${lightbox.index + 1} / ${lightbox.items.length}</div>
+        ${caption}
+      </div>
+    </div>
+  `;
 }
 
 function renderShop() {
@@ -1736,6 +1801,73 @@ function bindGalleryTabs() {
       render();
     });
   });
+
+  const activeAlbum = getActiveGalleryAlbum();
+  document.querySelectorAll("[data-gallery-open]").forEach((media) => {
+    media.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const index = Number(media.getAttribute("data-gallery-index"));
+      if (!activeAlbum) return;
+      openLightbox(activeAlbum.items, Number.isNaN(index) ? 0 : index);
+    });
+  });
+}
+
+function bindLightbox() {
+  document.onkeydown = null;
+  const lightbox = document.querySelector("[data-lightbox]");
+  if (!lightbox) return;
+
+  const closeButtons = lightbox.querySelectorAll("[data-lightbox-close]");
+  closeButtons.forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      closeLightbox();
+    });
+  });
+
+  lightbox.querySelector("[data-lightbox-prev]")?.addEventListener("click", (event) => {
+    event.preventDefault();
+    stepLightbox(-1);
+  });
+
+  lightbox.querySelector("[data-lightbox-next]")?.addEventListener("click", (event) => {
+    event.preventDefault();
+    stepLightbox(1);
+  });
+
+  let touchStartX = null;
+  lightbox.addEventListener(
+    "touchstart",
+    (event) => {
+      touchStartX = event.touches[0]?.clientX ?? null;
+    },
+    { passive: true }
+  );
+  lightbox.addEventListener("touchend", (event) => {
+    if (touchStartX === null) return;
+    const touchEndX = event.changedTouches[0]?.clientX ?? null;
+    if (touchEndX === null) return;
+    const delta = touchEndX - touchStartX;
+    if (Math.abs(delta) > 40) {
+      stepLightbox(delta > 0 ? -1 : 1);
+    }
+    touchStartX = null;
+  });
+
+  document.onkeydown = (event) => {
+    if (event.key === "Escape") {
+      closeLightbox();
+      return;
+    }
+    if (event.key === "ArrowLeft") {
+      stepLightbox(-1);
+    }
+    if (event.key === "ArrowRight") {
+      stepLightbox(1);
+    }
+  };
 }
 
 function bindCarousels() {
