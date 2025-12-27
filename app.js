@@ -28,38 +28,42 @@ const dataFiles = {
 };
 
 const ICONS = {
-  home: "<path d=\"M3 11.5 12 4l9 7.5V21H3z\"/><path d=\"M9 21v-6h6v6\"/>",
-  bed: "<path d=\"M4 11V7h10v4\"/><path d=\"M4 11h16v7H4z\"/><path d=\"M14 7h6v4\"/>",
-  spark: "<path d=\"M12 3l1.6 4.8L19 9l-4.8 1.2L12 15l-2.2-4.8L5 9l5.4-1.2z\"/>",
-  calendar: "<rect x=\"3\" y=\"5\" width=\"18\" height=\"16\" rx=\"2\"/><path d=\"M8 3v4M16 3v4M3 10h18\"/>",
-  chat: "<path d=\"M4 6h16v9a2 2 0 0 1-2 2H9l-4 4v-4H6a2 2 0 0 1-2-2z\"/>",
-  phone: "<path d=\"M6 4l4 4-2 2a12 12 0 0 0 6 6l2-2 4 4-3 3c-6-1-12-6-13-13z\"/>",
-  masters: "<circle cx=\"12\" cy=\"8\" r=\"3\"/><path d=\"M4 20a8 8 0 0 1 16 0\"/><path d=\"M18 8l2 2-2 2\"/>",
-  leaf: "<path d=\"M6 15c5-8 12-9 12-9s0 8-8 12c-2 1-4 1-6-3z\"/><path d=\"M8 13c3 0 5-1 7-3\"/>",
-  silence: "<path d=\"M15 4a7 7 0 1 0 5 12\"/>",
-  pin: "<path d=\"M12 21s6-6.5 6-11a6 6 0 1 0-12 0c0 4.5 6 11 6 11z\"/><circle cx=\"12\" cy=\"10\" r=\"2\"/>",
-  people: "<path d=\"M7 14a4 4 0 1 1 8 0\"/><path d=\"M4 20a6 6 0 0 1 16 0\"/>",
-  price: "<path d=\"M7 7h7l4 5-7 7-5-5z\"/><circle cx=\"13\" cy=\"9\" r=\"1\"/>",
-  check: "<path d=\"M5 12l4 4L19 6\"/>",
-  hall: "<rect x=\"4\" y=\"5\" width=\"16\" height=\"14\" rx=\"2\"/><path d=\"M4 9h16\"/>",
-  food: "<path d=\"M6 3v7M10 3v7M8 3v7\"/><path d=\"M14 3v7a3 3 0 0 0 6 0V3\"/><path d=\"M6 10v11\"/><path d=\"M18 10v11\"/>",
-  steam: "<path d=\"M8 4c2 2 2 4 0 6\"/><path d=\"M12 4c2 2 2 4 0 6\"/><path d=\"M16 4c2 2 2 4 0 6\"/>",
-  massage: "<path d=\"M4 14h7l3 4h6\"/><path d=\"M7 10h5l2 4\"/><path d=\"M4 14v-2a2 2 0 0 1 2-2h3\"/>",
-  sound: "<circle cx=\"8\" cy=\"12\" r=\"3\"/><path d=\"M14 9c2 2 2 4 0 6\"/><path d=\"M18 7c3 3 3 7 0 10\"/>",
-  plan: "<path d=\"M7 4h10v16H7z\"/><path d=\"M9 8h6M9 12h6M9 16h4\"/>",
-  support: "<path d=\"M12 4a5 5 0 0 1 5 5v2\"/><path d=\"M7 11V9a5 5 0 0 1 5-5\"/><path d=\"M7 11a2 2 0 0 0 0 4\"/><path d=\"M17 11a2 2 0 0 1 0 4\"/>",
-  logistics: "<path d=\"M4 16h16\"/><path d=\"M7 16l-3 3\"/><path d=\"M17 8h-6l-4 4\"/><path d=\"M17 8v4\"/>",
-  team: "<circle cx=\"8\" cy=\"10\" r=\"3\"/><circle cx=\"16\" cy=\"10\" r=\"3\"/><path d=\"M2 20a6 6 0 0 1 12 0\"/><path d=\"M10 20a6 6 0 0 1 12 0\"/>",
-  shield: "<path d=\"M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z\"/>",
-  tea: "<path d=\"M5 8h10v5a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z\"/><path d=\"M15 9h3a2 2 0 0 1 0 4h-3\"/><path d=\"M7 5h6\"/>",
-  lotus: "<path d=\"M12 6c2 3 2 6 0 9-2-3-2-6 0-9z\"/><path d=\"M6 9c3 2 4 4 4 7-3-1-5-3-6-6z\"/><path d=\"M18 9c-3 2-4 4-4 7 3-1 5-3 6-6z\"/>",
-  music: "<path d=\"M9 5v11a3 3 0 1 1-2-2.8\"/><path d=\"M9 5l9-2v10a3 3 0 1 1-2-2.8\"/>",
-  brush: "<path d=\"M13 4l7 7-4 4-7-7z\"/><path d=\"M4 20c3 0 5-2 5-5-3 0-5 2-5 5z\"/>",
-  craft: "<path d=\"M7 4h10l2 7H5z\"/><path d=\"M6 11h12v5a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4z\"/>",
-  drum: "<ellipse cx=\"12\" cy=\"7\" rx=\"7\" ry=\"3\"/><path d=\"M5 7v8c0 2 3 4 7 4s7-2 7-4V7\"/><path d=\"M4 4l4 4M20 4l-4 4\"/>",
+
+  home: "<path d=\"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8\" /><path d=\"M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\" />",
+  bed: "<path d=\"M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8\" /><path d=\"M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4\" /><path d=\"M12 4v6\" /><path d=\"M2 18h20\" />",
+  spark: "<path d=\"M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z\" /><path d=\"M20 2v4\" /><path d=\"M22 4h-4\" /><circle cx=\"4\" cy=\"20\" r=\"2\" />",
+  calendar: "<path d=\"M8 2v4\" /><path d=\"M16 2v4\" /><rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\" /><path d=\"M3 10h18\" />",
+  chat: "<path d=\"M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719\" />",
+  phone: "<path d=\"M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384\" />",
+  masters: "<path d=\"M16.051 12.616a1 1 0 0 1 1.909.024l.737 1.452a1 1 0 0 0 .737.535l1.634.256a1 1 0 0 1 .588 1.806l-1.172 1.168a1 1 0 0 0-.282.866l.259 1.613a1 1 0 0 1-1.541 1.134l-1.465-.75a1 1 0 0 0-.912 0l-1.465.75a1 1 0 0 1-1.539-1.133l.258-1.613a1 1 0 0 0-.282-.866l-1.156-1.153a1 1 0 0 1 .572-1.822l1.633-.256a1 1 0 0 0 .737-.535z\" /><path d=\"M8 15H7a4 4 0 0 0-4 4v2\" /><circle cx=\"10\" cy=\"7\" r=\"4\" />",
+  leaf: "<path d=\"M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z\" /><path d=\"M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12\" />",
+  silence: "<path d=\"M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z\" /><line x1=\"22\" x2=\"16\" y1=\"9\" y2=\"15\" /><line x1=\"16\" x2=\"22\" y1=\"9\" y2=\"15\" />",
+  pin: "<path d=\"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0\" /><circle cx=\"12\" cy=\"10\" r=\"3\" />",
+  people: "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\" /><path d=\"M16 3.128a4 4 0 0 1 0 7.744\" /><path d=\"M22 21v-2a4 4 0 0 0-3-3.87\" /><circle cx=\"9\" cy=\"7\" r=\"4\" />",
+  price: "<path d=\"M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z\" /><circle cx=\"7.5\" cy=\"7.5\" r=\".5\" fill=\"currentColor\" />",
+  check: "<path d=\"M20 6 9 17l-5-5\" />",
+  hall: "<rect width=\"18\" height=\"7\" x=\"3\" y=\"3\" rx=\"1\" /><rect width=\"7\" height=\"7\" x=\"3\" y=\"14\" rx=\"1\" /><rect width=\"7\" height=\"7\" x=\"14\" y=\"14\" rx=\"1\" />",
+  food: "<path d=\"M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2\" /><path d=\"M7 2v20\" /><path d=\"M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7\" />",
+  steam: "<path d=\"M12.8 19.6A2 2 0 1 0 14 16H2\" /><path d=\"M17.5 8a2.5 2.5 0 1 1 2 4H2\" /><path d=\"M9.8 4.4A2 2 0 1 1 11 8H2\" />",
+  massage: "<path d=\"M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2\" /><path d=\"M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2\" /><path d=\"M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8\" /><path d=\"M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15\" />",
+  sound: "<path d=\"M2 10v3\" /><path d=\"M6 6v11\" /><path d=\"M10 3v18\" /><path d=\"M14 8v7\" /><path d=\"M18 5v13\" /><path d=\"M22 10v3\" />",
+  plan: "<rect width=\"8\" height=\"4\" x=\"8\" y=\"2\" rx=\"1\" ry=\"1\" /><path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\" /><path d=\"M12 11h4\" /><path d=\"M12 16h4\" /><path d=\"M8 11h.01\" /><path d=\"M8 16h.01\" />",
+  support: "<path d=\"M3 11h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5Zm0 0a9 9 0 1 1 18 0m0 0v5a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3Z\" /><path d=\"M21 16v2a4 4 0 0 1-4 4h-5\" />",
+  logistics: "<path d=\"M8 6v6\" /><path d=\"M15 6v6\" /><path d=\"M2 12h19.6\" /><path d=\"M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3\" /><circle cx=\"7\" cy=\"18\" r=\"2\" /><path d=\"M9 18h5\" /><circle cx=\"16\" cy=\"18\" r=\"2\" />",
+  team: "<path d=\"M18 21a8 8 0 0 0-16 0\" /><circle cx=\"10\" cy=\"8\" r=\"5\" /><path d=\"M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3\" />",
+  shield: "<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\" />",
+  tea: "<path d=\"m6 8 1.75 12.28a2 2 0 0 0 2 1.72h4.54a2 2 0 0 0 2-1.72L18 8\" /><path d=\"M5 8h14\" /><path d=\"M7 15a6.47 6.47 0 0 1 5 0 6.47 6.47 0 0 0 5 0\" /><path d=\"m12 8 1-6h2\" />",
+  lotus: "<path d=\"M12 5a3 3 0 1 1 3 3m-3-3a3 3 0 1 0-3 3m3-3v1M9 8a3 3 0 1 0 3 3M9 8h1m5 0a3 3 0 1 1-3 3m3-3h-1m-2 3v-1\" /><circle cx=\"12\" cy=\"8\" r=\"2\" /><path d=\"M12 10v12\" /><path d=\"M12 22c4.2 0 7-1.667 7-5-4.2 0-7 1.667-7 5Z\" /><path d=\"M12 22c-4.2 0-7-1.667-7-5 4.2 0 7 1.667 7 5Z\" />",
+  music: "<circle cx=\"8\" cy=\"18\" r=\"4\" /><path d=\"M12 18V2l7 4\" />",
+  brush: "<path d=\"m14.622 17.897-10.68-2.913\" /><path d=\"M18.376 2.622a1 1 0 1 1 3.002 3.002L17.36 9.643a.5.5 0 0 0 0 .707l.944.944a2.41 2.41 0 0 1 0 3.408l-.944.944a.5.5 0 0 1-.707 0L8.354 7.348a.5.5 0 0 1 0-.707l.944-.944a2.41 2.41 0 0 1 3.408 0l.944.944a.5.5 0 0 0 .707 0z\" /><path d=\"M9 8c-1.804 2.71-3.97 3.46-6.583 3.948a.507.507 0 0 0-.302.819l7.32 8.883a1 1 0 0 0 1.185.204C12.735 20.405 16 16.792 16 15\" />",
+  craft: "<path d=\"M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z\" /><circle cx=\"13.5\" cy=\"6.5\" r=\".5\" fill=\"currentColor\" /><circle cx=\"17.5\" cy=\"10.5\" r=\".5\" fill=\"currentColor\" /><circle cx=\"6.5\" cy=\"12.5\" r=\".5\" fill=\"currentColor\" /><circle cx=\"8.5\" cy=\"7.5\" r=\".5\" fill=\"currentColor\" />",
+  drum: "<path d=\"m2 2 8 8\" /><path d=\"m22 2-8 8\" /><ellipse cx=\"12\" cy=\"9\" rx=\"10\" ry=\"5\" /><path d=\"M7 13.4v7.9\" /><path d=\"M12 14v8\" /><path d=\"M17 13.4v7.9\" /><path d=\"M2 9v8a10 5 0 0 0 20 0V9\" />",
   telegram: "<path d=\"M21 5L3 12l6 2 2 6 10-15z\"/><path d=\"M9 14l12-9\"/>",
-  instagram: "<rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"5\"/><circle cx=\"12\" cy=\"12\" r=\"4\"/><circle cx=\"17\" cy=\"7\" r=\"1\"/>",
-  globe: "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M3 12h18\"/><path d=\"M12 3a15 15 0 0 1 0 18\"/><path d=\"M12 3a15 15 0 0 0 0 18\"/>"
+  instagram: "<rect width=\"20\" height=\"20\" x=\"2\" y=\"2\" rx=\"5\" ry=\"5\" /><path d=\"M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z\" /><line x1=\"17.5\" x2=\"17.51\" y1=\"6.5\" y2=\"6.5\" />",
+  globe: "<circle cx=\"12\" cy=\"12\" r=\"10\" /><path d=\"M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20\" /><path d=\"M2 12h20\" />",
+  back: "<path d=\"m12 19-7-7 7-7\" /><path d=\"M19 12H5\" />",
+  share: "<circle cx=\"18\" cy=\"5\" r=\"3\" /><circle cx=\"6\" cy=\"12\" r=\"3\" /><circle cx=\"18\" cy=\"19\" r=\"3\" /><line x1=\"8.59\" x2=\"15.42\" y1=\"13.51\" y2=\"17.49\" /><line x1=\"15.41\" x2=\"8.59\" y1=\"6.51\" y2=\"10.49\" />",
+
 };
 
 init();
@@ -148,6 +152,16 @@ function renderCarousel(items = [], label = "") {
   `;
 }
 
+function buildRequestRoute(type, params = {}) {
+  const search = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === "") return;
+    search.set(key, value);
+  });
+  const query = search.toString();
+  return `#/request/${type}${query ? `?${query}` : ""}`;
+}
+
 function getTelegramContext() {
   const tg = window.Telegram?.WebApp;
   if (!tg) {
@@ -194,6 +208,7 @@ function render() {
   const content = renderRoute(path, query);
   appRoot.innerHTML = content.html;
   bindNavigation();
+  bindShareButtons();
   if (content.bind) {
     content.bind();
   }
@@ -212,7 +227,7 @@ function renderRoute(path, query) {
     return renderServiceDetail(parts[1]);
   }
   if (parts[0] === "master") {
-    return renderMasterDetail(parts[1]);
+    return renderMasterDetail(parts[1], query);
   }
 
   switch (path) {
@@ -230,7 +245,7 @@ function renderRoute(path, query) {
     case "/kitchen":
       return renderKitchen();
     case "/gallery":
-      return renderGallery();
+      return renderGallery(query);
     case "/shop":
       return renderShop();
     case "/contact":
@@ -406,7 +421,7 @@ function renderHome() {
 }
 
 function renderAccommodation() {
-  const { accommodation, kitchen } = state.data;
+  const { accommodation, kitchen, gallery } = state.data;
   const roomFund = accommodation.roomFund;
 
   const stats = [
@@ -486,6 +501,23 @@ function renderAccommodation() {
     : "";
 
   const hall = accommodation.practiceHall;
+  const hallAlbum = gallery?.albums?.find((album) => album.id === hall.galleryAlbumId);
+  const hallPreviewItems = (hallAlbum?.items || []).filter((item) => item.type === "image").slice(0, 4);
+  const hallPreview = hallPreviewItems.length
+    ? `
+      <div class="media-grid hall-card__media">
+        ${hallPreviewItems
+          .map(
+            (item) => `
+              <div class="media-card">
+                <img src="${item.thumb || item.src}" alt="${hall.title}" loading="lazy" />
+              </div>
+            `
+          )
+          .join("")}
+      </div>
+    `
+    : "";
   const hallFeatures = hall.features.map((feature) => `<span class="pill">${feature}</span>`).join("");
 
   const cateringCards = accommodation.catering.packages
@@ -526,7 +558,7 @@ function renderAccommodation() {
       </div>
     </section>
     ${formatsSection}
-    <section class="card card--strong">
+    <button class="card card--strong hall-card" type="button" data-nav="#/gallery?album=${hall.galleryAlbumId || "practice-hall"}">
       <div class="section-header">
         <div>
           <h2 class="section-title">${hall.title}</h2>
@@ -537,8 +569,11 @@ function renderAccommodation() {
           <span>${renderIcon("people")} ${hall.capacity}</span>
         </div>
       </div>
+      ${hall.description ? `<p class="card__text">${hall.description}</p>` : ""}
       <div class="pill-row">${hallFeatures}</div>
-    </section>
+      ${hallPreview}
+      <div class="hall-card__cta">${hall.ctaLabel || "Смотреть фото и описание"}</div>
+    </button>
     <section class="section">
       <h2 class="section-title">${accommodation.catering.title}</h2>
       <div class="section-subtitle">${accommodation.catering.description}</div>
@@ -753,21 +788,27 @@ function renderMasters() {
       const avatar = master.photos?.[0]
         ? `<img src="${master.photos[0]}" alt="${master.name}" />`
         : `<span class="avatar__placeholder">${master.name.charAt(0)}</span>`;
-      const tags = (master.tags || []).map((tag) => `<span class="tag">${tag}</span>`).join("");
+      const tags = (master.tags || []).map((tag) => `<span class="master-chip">${tag}</span>`).join("");
+      const anchor = master.anchor || master.bioShort || "";
+      const priceLine = master.priceLine || "";
+      const detailRoute = `#/master/${master.id}`;
+      const focusRoute = master.practices?.length ? `${detailRoute}?focus=practices` : detailRoute;
+      const ctaLabel = master.cardCtaLabel || "Подробнее";
       return `
-        <article class="card master-card">
-          <div class="master-card__header">
-            <div class="avatar">${avatar}</div>
-            <div>
-              <h3 class="card__title">${master.name}</h3>
-              <div class="card__text">${master.role}</div>
+        <article class="master-card master-card--premium" data-nav="${detailRoute}">
+          <div class="avatar">${avatar}</div>
+          <div class="master-card__content">
+            <h3 class="master-card__name">${master.name}</h3>
+            <div class="master-card__role">${master.role || ""}</div>
+            ${tags ? `<div class="master-card__chips">${tags}</div>` : ""}
+            ${anchor ? `<div class="master-card__anchor clamp-1">${anchor}</div>` : ""}
+            ${priceLine ? `<div class="master-card__price">${priceLine}</div>` : ""}
+            <div class="master-card__actions">
+              <button class="btn btn--premium btn--small" data-nav="${focusRoute}">${ctaLabel}</button>
+              <button class="btn btn--ghost btn--icon master-card__share" type="button" data-share-master="${master.id}" data-share-title="${master.name}" data-share-text="Мастер: ${master.name}" aria-label="Поделиться">
+                ${renderIcon("share")}
+              </button>
             </div>
-          </div>
-          <div class="card__text clamp-2">${master.bioShort}</div>
-          <div class="tag-row">${tags}</div>
-          <div class="master-card__actions">
-            <div class="socials">${renderSocialLinks(master.socials)}</div>
-            <button class="btn btn--primary btn--small" data-nav=\"#/master/${master.id}\">Написать</button>
           </div>
         </article>
       `;
@@ -780,7 +821,7 @@ function renderMasters() {
       <div class="page-subtitle">Команда специалистов и локальные мастера.</div>
     </section>
     <section class="section">
-      <div class="section-grid">
+      <div class="master-list">
         ${cards}
       </div>
     </section>
@@ -789,54 +830,137 @@ function renderMasters() {
   return renderShell({ content, activeTab: "masters" });
 }
 
-function renderMasterDetail(masterId) {
+function renderMasterDetail(masterId, query = new URLSearchParams()) {
   const { masters, services } = state.data;
   const master = masters.items.find((item) => item.id === masterId);
   if (!master) {
     return renderNotFound();
   }
 
-  const carousel = renderCarousel(master.photos, master.name);
-  const tags = (master.tags || []).map((tag) => `<span class="tag">${tag}</span>`).join("");
+  const heroImage = master.photos?.[0] || "";
+  const aboutShort = master.bioSummary || master.bioShort || master.bioFull || "";
+  const aboutFull = master.bioFull && master.bioFull !== aboutShort ? master.bioFull : "";
+  const tags = (master.tags || []).map((tag) => `<span class="master-chip">${tag}</span>`).join("");
   const linked = (master.linkedServices || [])
     .map((id) => services.extras.items.find((item) => item.id === id))
     .filter(Boolean)
     .map((service) => `<li>${service.title}</li>`)
     .join("");
 
+  const benefits = (master.benefits || [])
+    .map(
+      (benefit) => `
+        <article class="benefit-card">
+          ${renderIcon(benefit.icon)}
+          <div class="benefit-card__title">${benefit.title}</div>
+        </article>
+      `
+    )
+    .join("");
+
+  const practices = (master.practices || [])
+    .map((practice) => {
+      const meta = [practice.format, practice.duration, practice.price].filter(Boolean);
+      const metaMarkup = meta.map((item) => `<span class="badge">${item}</span>`).join("");
+      const note = practice.note ? `<div class="practice-card__note">${practice.note}</div>` : "";
+      const actions = (practice.actions || [])
+        .map((action, index) => {
+          let route = "";
+          if (action.route) {
+            route = action.route;
+          } else if (action.type === "tour") {
+            route = buildRequestRoute("turnkey", { comment: `Добавить в тур: ${practice.title}` });
+          } else if (action.type === "program") {
+            route = buildRequestRoute("master", { masterId: master.id, comment: `Запросить программу: ${practice.title}` });
+          } else if (action.type === "inquiry") {
+            route = buildRequestRoute("master", { masterId: master.id, comment: `Запрос: ${practice.title}` });
+          } else {
+            route = buildRequestRoute("master", { masterId: master.id, comment: `Практика: ${practice.title}` });
+          }
+
+          const variant = action.variant || (index === 0 ? "premium" : "ghost");
+          const size = action.size === "normal" ? "" : "btn--small";
+          return `
+            <button class="btn btn--${variant} ${size}" data-nav="${route}">
+              ${action.label}
+            </button>
+          `;
+        })
+        .join("");
+
+      return `
+        <article class="practice-card">
+          <h3 class="practice-card__title">${practice.title}</h3>
+          ${metaMarkup ? `<div class="practice-card__meta">${metaMarkup}</div>` : ""}
+          ${note}
+          ${practice.description ? `<div class="practice-card__text">${practice.description}</div>` : ""}
+          ${actions ? `<div class="practice-card__actions">${actions}</div>` : ""}
+        </article>
+      `;
+    })
+    .join("");
+
+  const contraindications = (master.contraindications || [])
+    .map((item) => `<li>${item}</li>`)
+    .join("");
+
+  const aboutMore = aboutFull
+    ? `
+        <details class="read-more">
+          <summary class="btn btn--text">Читать полностью</summary>
+          <div class="card__text">${aboutFull}</div>
+        </details>
+      `
+    : "";
+
   const content = `
-    <section class="page-hero">
-      <h1 class="page-title">${master.name}</h1>
-      <div class="page-subtitle">${master.role}</div>
-      <div class="tag-row">${tags}</div>
-    </section>
-    <section class="card card--strong">
-      ${carousel}
+    <section class="master-hero ${heroImage ? "" : "master-hero--placeholder"}" ${heroImage ? `style="background-image: url('${heroImage}')"` : ""}>
+      <div class="master-hero__actions">
+        <button class="btn btn--ghost btn--small master-hero__action" data-nav="#/masters">
+          ${renderIcon("back")}
+          Назад
+        </button>
+        <button class="btn btn--ghost btn--icon master-hero__action" type="button" data-share-master="${master.id}" data-share-title="${master.name}" data-share-text="Мастер: ${master.name}" aria-label="Поделиться">
+          ${renderIcon("share")}
+        </button>
+      </div>
+      <div class="master-hero__content">
+        <h1 class="master-hero__name">${master.name}</h1>
+        <div class="master-hero__role">${master.role || ""}</div>
+        ${tags ? `<div class="master-hero__tags">${tags}</div>` : ""}
+      </div>
+      ${heroImage ? "" : `<div class="master-hero__placeholder">Фото мастера</div>`}
     </section>
     <section class="card">
       <h2 class="section-title">О мастере</h2>
-      <p class="card__text">${master.bioFull}</p>
+      ${aboutShort ? `<p class="card__text">${aboutShort}</p>` : ""}
+      ${aboutMore}
     </section>
-    ${linked ? `<section class=\"card\"><h2 class=\"section-title\">Услуги мастера</h2><ul class=\"list\">${linked}</ul></section>` : ""}
+    ${benefits ? `<section class="card"><h2 class="section-title">Что даёт метод</h2><div class="master-benefits">${benefits}</div></section>` : ""}
+    ${practices ? `<section class="section" id="master-practices"><h2 class="section-title">Практики</h2><div class="master-practices">${practices}</div></section>` : ""}
+    ${!practices && linked ? `<section class=\"card\"><h2 class=\"section-title\">Услуги мастера</h2><ul class=\"list\">${linked}</ul></section>` : ""}
+    ${contraindications ? `<section class="card alert-card"><details><summary><span>Важно: есть противопоказания</span><span class="alert-card__action">Смотреть список</span></summary><ul class="list">${contraindications}</ul></details></section>` : ""}
     <section class="card">
-      <h2 class="section-title">Контакты</h2>
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Контакты и соцсети</h2>
+          <div class="section-subtitle">Ответим по доступности и формату.</div>
+        </div>
+        <button class="btn btn--ghost btn--small" data-nav="#/contact">Написать менеджеру</button>
+      </div>
       <div class="socials">${renderSocialLinks(master.socials)}</div>
+      <div class="cta-row">
+        <button class="btn btn--primary" data-nav="#/request/master?masterId=${master.id}">Запросить проведение</button>
+        <button class="btn btn--ghost" data-nav="#/contact">Связаться</button>
+      </div>
     </section>
-    <div class="cta-panel">
-      <div>
-        <h2 class="section-title">Связаться с мастером</h2>
-        <div class="section-subtitle">Ответим по доступности и формату.</div>
-      </div>
-      <div class="cta-panel__actions">
-        <button class="btn btn--primary" data-nav=\"#/request/master?masterId=${master.id}\">Запросить запись</button>
-        <button class="btn btn--ghost" data-nav=\"#/contact\">Связаться</button>
-      </div>
-    </div>
   `;
 
   return {
     ...renderShell({ content, activeTab: "masters" }),
-    bind: bindCarousels
+    bind: () => {
+      bindMasterProfile(query);
+    }
   };
 }
 
@@ -1023,8 +1147,12 @@ function renderKitchen() {
   };
 }
 
-function renderGallery() {
+function renderGallery(query = new URLSearchParams()) {
   const { gallery } = state.data;
+  const requestedAlbum = query.get("album");
+  if (requestedAlbum && gallery.albums.some((album) => album.id === requestedAlbum)) {
+    state.ui.galleryAlbumId = requestedAlbum;
+  }
   const activeAlbum = gallery.albums.find((album) => album.id === state.ui.galleryAlbumId) || gallery.albums[0];
 
   const tabs = gallery.albums
@@ -1384,18 +1512,69 @@ function buildPrefill(type, query) {
     prefill.masterId = masterId;
   }
 
+  const comment = query.get("comment");
+  if (comment) {
+    prefill.comment = comment;
+  }
+
   return prefill;
 }
 
 function bindNavigation() {
   document.querySelectorAll("[data-nav]").forEach((node) => {
-    node.addEventListener("click", () => {
+    node.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
       const target = node.getAttribute("data-nav");
       if (target) {
         window.location.hash = target.replace(/^#/, "");
       }
     });
   });
+}
+
+function bindShareButtons() {
+  document.querySelectorAll("[data-share-master]").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const masterId = button.getAttribute("data-share-master");
+      const title = button.getAttribute("data-share-title") || "Мастер";
+      const text = button.getAttribute("data-share-text") || title;
+      const url = masterId
+        ? `${window.location.origin}${window.location.pathname}#/master/${masterId}`
+        : window.location.href;
+
+      if (navigator.share) {
+        navigator.share({ title, text, url }).catch(() => {});
+        return;
+      }
+
+      if (navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+          button.classList.add("is-copied");
+          setTimeout(() => button.classList.remove("is-copied"), 1400);
+        });
+        return;
+      }
+
+      window.prompt("Скопируйте ссылку", url);
+    });
+  });
+}
+
+function bindMasterProfile(query) {
+  if (!query) return;
+  const focus = query.get("focus");
+  if (focus === "practices") {
+    const section = document.getElementById("master-practices");
+    if (section) {
+      requestAnimationFrame(() => {
+        section.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+  }
 }
 
 function bindPracticeFilters() {
