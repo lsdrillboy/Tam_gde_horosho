@@ -50,7 +50,13 @@
   "galleryPreview": {
     "title": "Галерея пространства",
     "subtitle": "Номера, зал для практик, баня и природа",
-    "route": "/gallery"
+    "route": "/gallery",
+    "images": [
+      "assets/gallery/territory-nature/1735878476380.jpg",
+      "assets/gallery/territory-nature/1735878476546.jpg",
+      "assets/gallery/territory-nature/1735878476606.jpg",
+      "assets/gallery/territory-nature/1766584816358.jpg"
+    ]
   },
   "cta": {
     "title": "Обсудить сотрудничество",

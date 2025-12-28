@@ -413,6 +413,7 @@ button {
   border: 1px solid var(--line);
   background: var(--surface);
   overflow: hidden;
+  aspect-ratio: 4 / 3;
   min-height: 120px;
 }
 
@@ -1135,6 +1136,27 @@ button {
   margin-top: 12px;
 }
 
+.map-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.map-embed {
+  width: 100%;
+  border: 0;
+  display: block;
+  aspect-ratio: 4 / 3;
+  min-height: 240px;
+}
+
+.map-card__actions {
+  padding: 12px 14px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: var(--surface);
+}
+
 .list {
   display: grid;
   gap: 8px;
@@ -1630,24 +1652,50 @@ button {
 
 .alert-card {
   background: rgba(231, 225, 215, 0.45);
+  padding: 14px;
 }
 
-.alert-card details {
+.alert-card__details {
   display: grid;
   gap: 12px;
 }
 
-.alert-card summary {
+.alert-card__summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   cursor: pointer;
-  font-weight: 600;
   list-style: none;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(126, 160, 107, 0.4);
+  background: rgba(255, 255, 255, 0.95);
 }
 
-.alert-card summary::-webkit-details-marker {
+.alert-card__summary > div {
+  display: grid;
+  gap: 2px;
+}
+
+.alert-card__summary::-webkit-details-marker {
   display: none;
+}
+
+.alert-card__kicker {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.alert-card__title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--primary-dark);
+  font-weight: 600;
+  line-height: 1.2;
 }
 
 .alert-card__action {

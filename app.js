@@ -411,7 +411,9 @@ function renderHome() {
     )
     .join("");
 
-  const previewItems = getGalleryPreviewItems(gallery, 4);
+  const previewItems = Array.isArray(home.galleryPreview?.images) && home.galleryPreview.images.length
+    ? home.galleryPreview.images.map((item) => normalizeMediaItem(item))
+    : getGalleryPreviewItems(gallery, 4);
   const previewMarkup = previewItems
     .map(
       (item, index) => {
@@ -1124,7 +1126,22 @@ function renderMasterDetail(masterId, query = new URLSearchParams()) {
     ${benefits ? `<section class="card"><h2 class="section-title">Что даёт метод</h2><div class="master-benefits">${benefits}</div></section>` : ""}
     ${practices ? `<section class="section" id="master-practices"><h2 class="section-title">Практики</h2><div class="master-practices">${practices}</div></section>` : ""}
     ${!practices && linked ? `<section class=\"card\"><h2 class=\"section-title\">Услуги мастера</h2><ul class=\"list\">${linked}</ul></section>` : ""}
-    ${contraindications ? `<section class="card alert-card"><details><summary><span>Важно: есть противопоказания</span><span class="alert-card__action" aria-hidden="true">${renderIcon("chevron")}</span></summary><ul class="list">${contraindications}</ul></details></section>` : ""}
+    ${contraindications
+    ? `
+      <section class="card alert-card">
+        <details class="alert-card__details">
+          <summary class="alert-card__summary">
+            <div>
+              <div class="alert-card__kicker">Важно</div>
+              <div class="alert-card__title">Есть противопоказания</div>
+            </div>
+            <span class="alert-card__action" aria-hidden="true">${renderIcon("chevron")}</span>
+          </summary>
+          <ul class="list list--bulleted">${contraindications}</ul>
+        </details>
+      </section>
+    `
+    : ""}
     <section class="card">
       <div class="section-header">
         <div>
@@ -1475,6 +1492,8 @@ function renderContact() {
   const telegram = contacts.telegram || "";
   const whatsapp = contacts.whatsapp || "";
   const address = contacts.address || "";
+  const mapEmbed = contacts.mapEmbed || "";
+  const mapUrl = contacts.mapUrl || "";
 
   const content = `
     <section class="page-hero">
@@ -1504,6 +1523,16 @@ function renderContact() {
         ${whatsapp ? `<a class="btn btn--ghost" href="${whatsapp}" target="_blank" rel="noopener">WhatsApp</a>` : ""}
       </div>
     </section>
+    ${
+      mapEmbed
+        ? `
+      <section class="card map-card">
+        <iframe class="map-embed" src="${mapEmbed}" title="Карта локации" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+        ${mapUrl ? `<div class="map-card__actions"><a class="btn btn--ghost" href="${mapUrl}" target="_blank" rel="noopener">Открыть карту</a></div>` : ""}
+      </section>
+    `
+        : ""
+    }
     <div class="cta-panel">
       <div>
         <h2 class="section-title">Оставить заявку</h2>
@@ -1565,7 +1594,9 @@ function renderRequestForm(type, query) {
   const prefill = buildPrefill(type, query);
 
   const fieldsMarkup = fields
-    .map((field) => renderField(field, prefill, { practices, shop, accommodation, services, masters }))
+    .map((field) =>
+      renderField(field, prefill, { practices, shop, accommodation, services, masters, requestType: type })
+    )
     .join("");
 
   const foodEstimate = (type === "accommodation" || type === "turnkey")
@@ -1595,8 +1626,13 @@ function renderField(field, prefill, context) {
   const value = prefill[field.id];
   const label = `${field.label}${field.required ? " *" : ""}`;
   const id = `field_${field.id}`;
+  const resolvedType = field.id === "preferredDates"
+    && field.type === "text"
+    && context.requestType === "master"
+    ? "date-range"
+    : field.type;
 
-  if (field.type === "select") {
+  if (resolvedType === "select") {
     let options = field.options || [];
     if (field.optionsSource === "accommodation") {
       options = context.accommodation.types.map((item) => ({ value: item.id, label: item.title }));
@@ -1629,7 +1665,7 @@ function renderField(field, prefill, context) {
     `;
   }
 
-  if (field.type === "multiselect") {
+  if (resolvedType === "multiselect") {
     let options = field.options || [];
     if (field.dataSource === "practices.json") {
       options = context.practices.practices.map((item) => ({ value: item.id, label: item.title }));
@@ -1661,7 +1697,7 @@ function renderField(field, prefill, context) {
     `;
   }
 
-  if (field.type === "textarea") {
+  if (resolvedType === "textarea") {
     return `
       <div class="field">
         <label for="${id}">${label}</label>
@@ -1670,7 +1706,7 @@ function renderField(field, prefill, context) {
     `;
   }
 
-  if (field.type === "date-range") {
+  if (resolvedType === "date-range") {
     let fromValue = "";
     let toValue = "";
     if (typeof value === "string") {
@@ -1694,7 +1730,7 @@ function renderField(field, prefill, context) {
     `;
   }
 
-  if (field.type === "segmented") {
+  if (resolvedType === "segmented") {
     const options = field.options || [];
     const currentValue = value || "";
     const buttons = options
@@ -1718,7 +1754,7 @@ function renderField(field, prefill, context) {
     `;
   }
 
-  const inputType = field.type === "number" ? "number" : field.type || "text";
+  const inputType = resolvedType === "number" ? "number" : resolvedType || "text";
   const min = field.min ? `min="${field.min}"` : "";
 
   return `
@@ -2207,7 +2243,12 @@ function getGalleryPreviewItems(gallery, limit) {
   if (!gallery?.albums) {
     return Array.from({ length: limit }, () => ({ src: "" }));
   }
-  const items = gallery.albums.flatMap((album) => album.items || []);
+  const natureItems = (gallery.albums.find((album) => album.id === "nature")?.items || [])
+    .filter((item) => (item?.type || "image") !== "video");
+  const allItems = gallery.albums
+    .flatMap((album) => album.items || [])
+    .filter((item) => (item?.type || "image") !== "video");
+  const items = natureItems.length ? natureItems : allItems;
   if (!items.length) {
     return Array.from({ length: limit }, () => ({ src: "" }));
   }
