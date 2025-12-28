@@ -62,6 +62,7 @@ const ICONS = {
   telegram: "<path d=\"M21 5L3 12l6 2 2 6 10-15z\"/><path d=\"M9 14l12-9\"/>",
   instagram: "<rect width=\"20\" height=\"20\" x=\"2\" y=\"2\" rx=\"5\" ry=\"5\" /><path d=\"M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z\" /><line x1=\"17.5\" x2=\"17.51\" y1=\"6.5\" y2=\"6.5\" />",
   globe: "<circle cx=\"12\" cy=\"12\" r=\"10\" /><path d=\"M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20\" /><path d=\"M2 12h20\" />",
+  chevron: "<path d=\"m6 9 6 6 6-6\" />",
   back: "<path d=\"m12 19-7-7 7-7\" /><path d=\"M19 12H5\" />",
   share: "<circle cx=\"18\" cy=\"5\" r=\"3\" /><circle cx=\"6\" cy=\"12\" r=\"3\" /><circle cx=\"18\" cy=\"19\" r=\"3\" /><line x1=\"8.59\" x2=\"15.42\" y1=\"13.51\" y2=\"17.49\" /><line x1=\"15.41\" x2=\"8.59\" y1=\"6.51\" y2=\"10.49\" />",
 
@@ -72,6 +73,9 @@ init();
 async function init() {
   initTelegram();
   await loadData();
+  if (window.location.hash !== "#/home") {
+    window.location.hash = "#/home";
+  }
   if (!state.ui.galleryAlbumId && state.data.gallery?.albums?.length) {
     state.ui.galleryAlbumId = state.data.gallery.albums[0].id;
   }
@@ -94,6 +98,20 @@ function renderIcon(name, className = "") {
       ${markup}
     </svg>
   `;
+}
+
+function normalizeMediaItem(item) {
+  if (!item) return { type: "image", src: "" };
+  if (typeof item === "string") return { type: "image", src: item };
+  if (item.src) return { type: item.type || "image", src: item.src };
+  return { type: "image", src: String(item) };
+}
+
+function getMediaSource(items = []) {
+  if (!Array.isArray(items) || !items.length) return "";
+  const normalized = items.map(normalizeMediaItem);
+  const firstImage = normalized.find((media) => media.type !== "video" && media.src);
+  return (firstImage || normalized.find((media) => media.src) || {}).src || "";
 }
 
 function renderSocialLinks(socials = {}) {
@@ -121,17 +139,25 @@ function renderSocialLinks(socials = {}) {
 function renderCarousel(items = [], label = "") {
   const slides = items.length ? items : [""];
   const track = slides
-    .map((src, index) => {
-      if (!src) {
+    .map((item, index) => {
+      const media = normalizeMediaItem(item);
+      if (!media.src) {
         return `
           <div class="carousel__slide carousel__slide--placeholder">
             <div>Фото появится скоро</div>
           </div>
         `;
       }
+      if (media.type === "video") {
+        return `
+          <div class="carousel__slide">
+            <video src="${media.src}" controls preload="metadata" playsinline></video>
+          </div>
+        `;
+      }
       return `
         <div class="carousel__slide">
-          <img src="${src}" alt="${label} ${index + 1}" loading="lazy" />
+          <img src="${media.src}" alt="${label} ${index + 1}" loading="lazy" />
         </div>
       `;
     })
@@ -353,9 +379,12 @@ function getActiveTab(path) {
 function renderHome() {
   const { app, home, gallery } = state.data;
   const heroImage = home.hero.image;
+  const heroLogo = home.hero.logo
+    ? `<img class="hero__media-logo" src="${home.hero.logo}" alt="Логотип ${home.hero.title}" loading="eager" />`
+    : "";
   const heroMedia = heroImage
-    ? `<div class="hero__media" style="background-image: url('${heroImage}')"></div>`
-    : `<div class="hero__media hero__media--placeholder">Фото локации</div>`;
+    ? `<div class="hero__media" style="background-image: url('${heroImage}')">${heroLogo}</div>`
+    : `<div class="hero__media hero__media--placeholder">${heroLogo || "<div class=\"hero__media-text\">Фото локации</div>"}</div>`;
 
   const benefits = home.benefits
     .map(
@@ -473,8 +502,9 @@ function renderAccommodation() {
 
   const typesMarkup = accommodation.types
     .map((type) => {
-      const media = type.photos?.[0]
-        ? `<img src="${type.photos[0]}" alt="${type.title}" />`
+      const cover = getMediaSource(type.photos);
+      const media = cover
+        ? `<img src="${cover}" alt="${type.title}" />`
         : `<div class="room-card__placeholder">Фото номера</div>`;
       const capacityLabel = type.capacityMin && type.capacityMax
         ? `${type.capacityMin}–${type.capacityMax} гостя`
@@ -797,6 +827,16 @@ function renderServiceDetail(serviceId) {
           </div>
         `
         : "";
+      const ideal = program.ideal
+        ? `
+          <div class="massage-card__section">
+            <h3 class="massage-card__subtitle">${program.ideal.title}</h3>
+            <ul class="list list--bulleted">
+              ${(program.ideal.items || []).map((item) => `<li>${item}</li>`).join("")}
+            </ul>
+          </div>
+        `
+        : "";
       const session = program.session
         ? `
           <div class="massage-card__section">
@@ -832,6 +872,16 @@ function renderServiceDetail(serviceId) {
           </div>
         `
         : "";
+      const contraindications = program.contraindications
+        ? `
+          <div class="massage-card__section massage-card__alert">
+            <h3 class="massage-card__subtitle">${program.contraindications.title}</h3>
+            <ul class="list list--bulleted">
+              ${(program.contraindications.items || []).map((item) => `<li>${item}</li>`).join("")}
+            </ul>
+          </div>
+        `
+        : "";
       const prices = (program.prices || [])
         .map(
           (price) => `
@@ -849,17 +899,27 @@ function renderServiceDetail(serviceId) {
           </div>
         `
         : "";
+      const lead = program.lead ? `<div class="massage-card__lead">${program.lead}</div>` : "";
       return `
-        <article class="practice-card massage-card">
-          <h3 class="practice-card__title">${program.title}</h3>
-          ${program.lead ? `<div class="massage-card__lead">${program.lead}</div>` : ""}
-          ${paragraphs}
-          ${about}
-          ${session}
-          ${results}
-          ${prices ? `<div class="massage-card__prices">${prices}</div>` : ""}
-          ${contact}
-        </article>
+        <details class="practice-card massage-card massage-card--collapsible">
+          <summary class="massage-card__summary">
+            <div class="massage-card__summary-text">
+              <h3 class="practice-card__title">${program.title}</h3>
+              ${lead}
+            </div>
+            <span class="massage-card__toggle" aria-hidden="true">${renderIcon("chevron")}</span>
+          </summary>
+          <div class="massage-card__body">
+            ${paragraphs}
+            ${about}
+            ${ideal}
+            ${session}
+            ${results}
+            ${contraindications}
+            ${prices ? `<div class="massage-card__prices">${prices}</div>` : ""}
+            ${contact}
+          </div>
+        </details>
       `;
     })
     .join("");
@@ -1066,7 +1126,7 @@ function renderMasterDetail(masterId, query = new URLSearchParams()) {
     ${benefits ? `<section class="card"><h2 class="section-title">Что даёт метод</h2><div class="master-benefits">${benefits}</div></section>` : ""}
     ${practices ? `<section class="section" id="master-practices"><h2 class="section-title">Практики</h2><div class="master-practices">${practices}</div></section>` : ""}
     ${!practices && linked ? `<section class=\"card\"><h2 class=\"section-title\">Услуги мастера</h2><ul class=\"list\">${linked}</ul></section>` : ""}
-    ${contraindications ? `<section class="card alert-card"><details><summary><span>Важно: есть противопоказания</span><span class="alert-card__action">Открыть список</span></summary><ul class="list">${contraindications}</ul></details></section>` : ""}
+    ${contraindications ? `<section class="card alert-card"><details><summary><span>Важно: есть противопоказания</span><span class="alert-card__action" aria-hidden="true">${renderIcon("chevron")}</span></summary><ul class="list">${contraindications}</ul></details></section>` : ""}
     <section class="card">
       <div class="section-header">
         <div>
@@ -1612,6 +1672,30 @@ function renderField(field, prefill, context) {
     `;
   }
 
+  if (field.type === "date-range") {
+    let fromValue = "";
+    let toValue = "";
+    if (typeof value === "string") {
+      const parts = value.split(/\s[—–-]\s/).map((part) => part.trim());
+      if (parts.length === 2) {
+        [fromValue, toValue] = parts;
+      }
+    }
+    const hint = field.hint ? `<div class="hint">${field.hint}</div>` : "";
+    return `
+      <div class="field">
+        <label>${label}</label>
+        <div class="field__range" data-range="${field.id}">
+          <input id="${id}_from" name="${field.id}_from" type="date" value="${fromValue}" aria-label="Дата заезда" />
+          <span class="field__range-divider">—</span>
+          <input id="${id}_to" name="${field.id}_to" type="date" value="${toValue}" aria-label="Дата выезда" />
+          <input type="hidden" name="${field.id}" value="${value || ""}" />
+        </div>
+        ${hint}
+      </div>
+    `;
+  }
+
   if (field.type === "segmented") {
     const options = field.options || [];
     const currentValue = value || "";
@@ -1666,6 +1750,9 @@ function buildPrefill(type, query) {
   if (to) prefill.dateTo = to;
 
   const datesLabel = from && to ? `${from} — ${to}` : null;
+  if (type === "dates" && datesLabel) {
+    prefill.preferredDates = datesLabel;
+  }
   if (type === "practices" && datesLabel) {
     prefill.datesOrDays = datesLabel;
   }
@@ -1911,6 +1998,7 @@ function bindRequestForm(type, fields) {
   const submitButton = form.querySelector("button[type=submit]");
 
   bindSegments(form);
+  bindDateRangeFields(form);
 
   if (type === "accommodation" || type === "turnkey") {
     bindFoodEstimateInForm(form);
@@ -1971,6 +2059,32 @@ function bindSegments(form) {
         item.classList.toggle("segment--active", item === button);
       });
     });
+  });
+}
+
+function bindDateRangeFields(form) {
+  form.querySelectorAll("[data-range]").forEach((group) => {
+    const fieldId = group.getAttribute("data-range");
+    if (!fieldId) return;
+    const from = group.querySelector(`input[name="${fieldId}_from"]`);
+    const to = group.querySelector(`input[name="${fieldId}_to"]`);
+    const hidden = group.querySelector(`input[name="${fieldId}"]`);
+    if (!from || !to || !hidden) return;
+
+    const update = () => {
+      if (from.value && to.value) {
+        hidden.value = `${from.value} — ${to.value}`;
+      } else {
+        hidden.value = "";
+      }
+    };
+
+    ["input", "change"].forEach((eventName) => {
+      from.addEventListener(eventName, update);
+      to.addEventListener(eventName, update);
+    });
+
+    update();
   });
 }
 

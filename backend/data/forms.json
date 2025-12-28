@@ -39,9 +39,9 @@
         {
           "id": "preferredDates",
           "label": "Предпочитаемые даты",
-          "type": "text",
+          "type": "date-range",
           "required": true,
-          "placeholder": "примерно с … по …"
+          "hint": "Выберите дату заезда и выезда"
         },
         {
           "id": "requesterType",

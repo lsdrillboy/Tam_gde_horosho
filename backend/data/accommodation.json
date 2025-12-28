@@ -7,49 +7,144 @@
   },
   "types": [
     {
-      "id": "standard",
-      "title": "Стандарт",
-      "subtitle": "Светлый номер для пары или небольшой семьи",
-      "description": "Комфортный номер с естественным светом и приватностью для спокойного отдыха.",
-      "capacityMin": 2,
-      "capacityMax": 3,
-      "features": ["Двуспальная кровать", "Санузел", "Вид на природу"],
-      "price": {
-        "mode": "request",
-        "text": "Цена по запросу"
-      },
-      "badge": "Для пары",
-      "photos": []
-    },
-    {
-      "id": "comfort",
-      "title": "Комфорт",
-      "subtitle": "Больше пространства и уединения",
-      "description": "Номер с увеличенной площадью и зонами для отдыха и работы.",
+      "id": "domiki",
+      "title": "Домики",
+      "subtitle": "Отдельные домики для уединения и тишины",
+      "description": "Небольшие домики среди природы для спокойного отдыха, пары или небольшой семьи.",
       "capacityMin": 2,
       "capacityMax": 4,
-      "features": ["Большая кровать", "Санузел", "Рабочая зона"],
+      "features": ["Отдельный вход", "Санузел", "Вид на природу"],
       "price": {
         "mode": "request",
         "text": "Цена по запросу"
       },
-      "badge": "Для группы",
-      "photos": []
+      "badge": "Уединение",
+      "photos": [
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/domiki/1746362598896.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/domiki/1746362656951.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/domiki/1746362701185.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/domiki/1746362746416.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/domiki/1746362791770.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/domiki/1746363423458.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/domiki/1766839330802.jpg"
+        },
+        {
+          "type": "video",
+          "src": "assets/gallery/rooms/domiki/InShot_20251224_171632950.mp4"
+        }
+      ]
     },
     {
-      "id": "family",
-      "title": "Семейные апартаменты",
-      "subtitle": "Идеально для семьи или команды организаторов",
-      "description": "Отдельная зона для отдыха и размещения команды ретрита.",
+      "id": "cottages",
+      "title": "Коттеджи",
+      "subtitle": "Простор для семей и компаний",
+      "description": "Отдельные коттеджи с просторными зонами отдыха для комфортного размещения группы.",
       "capacityMin": 4,
-      "capacityMax": 6,
-      "features": ["Несколько спальных мест", "Санузел", "Гостиная"],
+      "capacityMax": 8,
+      "features": ["Просторная гостиная", "Несколько спален", "Санузел"],
       "price": {
         "mode": "request",
         "text": "Цена по запросу"
       },
-      "badge": "Семейный",
-      "photos": []
+      "badge": "Для компании",
+      "photos": [
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/cottages/1746362246569.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/cottages/1746362246574.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/cottages/1746362246579.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/cottages/1746362246584.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/cottages/1750169324106.jpg"
+        },
+        {
+          "type": "video",
+          "src": "assets/gallery/rooms/cottages/InShot_20251224_170924611.mp4"
+        },
+        {
+          "type": "video",
+          "src": "assets/gallery/rooms/cottages/InShot_20251227_192742066.mp4"
+        }
+      ]
+    },
+    {
+      "id": "townhouses",
+      "title": "Таунхаусы",
+      "subtitle": "Комфортные двухуровневые номера",
+      "description": "Двухуровневые таунхаусы с удобной планировкой для спокойного отдыха.",
+      "capacityMin": 3,
+      "capacityMax": 6,
+      "features": ["Два уровня", "Санузел", "Зона отдыха"],
+      "price": {
+        "mode": "request",
+        "text": "Цена по запросу"
+      },
+      "badge": "Комфорт",
+      "photos": [
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouses/1746363056793.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouses/1746363187861.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouses/1746363216564.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouses/1746363255650.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouses/1746363313177.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouses/1746363339310.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouses/1766839303244.jpg"
+        },
+        {
+          "type": "video",
+          "src": "assets/gallery/rooms/townhouses/InShot_20251212_165655500.mp4"
+        }
+      ]
     }
   ],
   "formats": [

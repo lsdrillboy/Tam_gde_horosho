@@ -6,283 +6,95 @@
       "items": [
         {
           "type": "image",
-          "src": "assets/gallery/rooms/cottage-8/1746362246569.jpg"
+          "src": "assets/gallery/rooms/domiki/1746362598896.jpg"
         },
         {
           "type": "image",
-          "src": "assets/gallery/rooms/cottage-8/1746362246574.jpg"
+          "src": "assets/gallery/rooms/domiki/1746362656951.jpg"
         },
         {
           "type": "image",
-          "src": "assets/gallery/rooms/cottage-8/1746362246579.jpg"
+          "src": "assets/gallery/rooms/domiki/1746362701185.jpg"
         },
         {
           "type": "image",
-          "src": "assets/gallery/rooms/cottage-8/1746362246584.jpg"
+          "src": "assets/gallery/rooms/domiki/1746362746416.jpg"
         },
         {
           "type": "image",
-          "src": "assets/gallery/rooms/cottage-8/1750169324106.jpg"
-        },
-        {
-          "type": "video",
-          "src": "assets/gallery/rooms/cottage-8/InShot_20251224_170924611.mp4"
+          "src": "assets/gallery/rooms/domiki/1746362791770.jpg"
         },
         {
           "type": "image",
-          "src": "assets/gallery/rooms/townhouse/1746363056793.jpg"
+          "src": "assets/gallery/rooms/domiki/1746363423458.jpg"
         },
         {
           "type": "image",
-          "src": "assets/gallery/rooms/townhouse/1746363082358.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/townhouse/1746363187861.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/townhouse/1746363216564.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/townhouse/1746363255650.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/townhouse/1746363298150.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/townhouse/1746363313177.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/townhouse/1746363339310.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/townhouse/1746363358063.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/townhouse/1747651115962.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/townhouse/1747651115967.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/townhouse/1747651115972.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/townhouse/IMG_20250717_103817.jpg"
+          "src": "assets/gallery/rooms/domiki/1766839330802.jpg"
         },
         {
           "type": "video",
-          "src": "assets/gallery/rooms/townhouse/InShot_20251212_165655500.mp4"
+          "src": "assets/gallery/rooms/domiki/InShot_20251224_171632950.mp4"
         },
         {
           "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1747652835193.jpg"
+          "src": "assets/gallery/rooms/cottages/1746362246569.jpg"
         },
         {
           "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1747652835197.jpg"
+          "src": "assets/gallery/rooms/cottages/1746362246574.jpg"
         },
         {
           "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1747652835201.jpg"
+          "src": "assets/gallery/rooms/cottages/1746362246579.jpg"
         },
         {
           "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1747652835205.jpg"
+          "src": "assets/gallery/rooms/cottages/1746362246584.jpg"
         },
         {
           "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1747652835209.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1747652835214.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1747652835219.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1747652835223.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1747652835227.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1747652835231.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1747652835236.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1750614913244.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1750614913252.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1750614913257.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1750614913263.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1750614913268.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1750614913275.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1750614913280.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1750614913286.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1750614913291.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1750614913296.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1750614913302.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1750614913309.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1750614913319.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1750614913326.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1750614913333.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1750614913340.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1750614913347.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1750614913355.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1750614913363.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1750614913373.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/extra-rooms/1750614913387.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/cabins/1746362409955.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/cabins/1746362444296.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/cabins/1746362497932.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/cabins/1746362541031.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/cabins/1746362598896.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/cabins/1746362656951.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/cabins/1746362701185.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/cabins/1746362746416.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/cabins/1746362791770.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/cabins/1746362809340.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/cabins/1746362846204.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/cabins/1746363423458.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/cabins/1747651077508.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/cabins/1747651077516.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/cabins/1747651077521.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/cabins/1747651077527.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/cabins/1747651077532.jpg"
+          "src": "assets/gallery/rooms/cottages/1750169324106.jpg"
         },
         {
           "type": "video",
-          "src": "assets/gallery/rooms/cabins/InShot_20251224_171632950.mp4"
+          "src": "assets/gallery/rooms/cottages/InShot_20251224_170924611.mp4"
+        },
+        {
+          "type": "video",
+          "src": "assets/gallery/rooms/cottages/InShot_20251227_192742066.mp4"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouses/1746363056793.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouses/1746363187861.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouses/1746363216564.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouses/1746363255650.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouses/1746363313177.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouses/1746363339310.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/rooms/townhouses/1766839303244.jpg"
+        },
+        {
+          "type": "video",
+          "src": "assets/gallery/rooms/townhouses/InShot_20251212_165655500.mp4"
         }
       ]
     },
@@ -350,59 +162,39 @@
     },
     {
       "id": "bath-lagoon",
-      "title": "Баня и лагуна",
+      "title": "Лагуна",
       "items": [
         {
           "type": "image",
-          "src": "assets/gallery/bath-lagoon/1747651163253.jpg"
+          "src": "assets/gallery/lagoon/1727322431030.jpg"
         },
         {
           "type": "image",
-          "src": "assets/gallery/bath-lagoon/1747651163258.jpg"
+          "src": "assets/gallery/lagoon/1727322431036.jpg"
         },
         {
           "type": "image",
-          "src": "assets/gallery/bath-lagoon/1747651163262.jpg"
+          "src": "assets/gallery/lagoon/1727322431041.jpg"
         },
         {
           "type": "image",
-          "src": "assets/gallery/bath-lagoon/1747651163266.jpg"
+          "src": "assets/gallery/lagoon/1727322431080.jpg"
         },
         {
           "type": "image",
-          "src": "assets/gallery/bath-lagoon/1747651163273.jpg"
+          "src": "assets/gallery/lagoon/1735878476159.jpg"
         },
         {
           "type": "image",
-          "src": "assets/gallery/bath-lagoon/1747651163280.jpg"
+          "src": "assets/gallery/lagoon/1735878476187.jpg"
         },
         {
           "type": "image",
-          "src": "assets/gallery/bath-lagoon/1747651163286.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/bath-lagoon/1747651163292.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/bath-lagoon/1747651163298.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/bath-lagoon/1747651163305.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/bath-lagoon/1747651163311.jpg"
+          "src": "assets/gallery/lagoon/1735878476194.jpg"
         },
         {
           "type": "video",
-          "src": "assets/gallery/bath-lagoon/InShot_20251224_165545245.mp4"
-        },
-        {
-          "type": "video",
-          "src": "assets/gallery/bath-lagoon/VID-20250131-WA0019.mp4"
+          "src": "assets/gallery/lagoon/VID_20240919_131720.mp4"
         }
       ]
     },
@@ -429,17 +221,170 @@
         {
           "type": "video",
           "src": "assets/gallery/dining/InShot_20251224_164722816.mp4"
-        },
-        {
-          "type": "video",
-          "src": "assets/gallery/dining/VID_20250727_125429.mp4"
         }
       ]
     },
     {
       "id": "nature",
       "title": "Территория и природа",
-      "items": []
+      "items": [
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1735878476030.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1735878476039.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1735878476055.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1735878476072.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1735878476159.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1735878476299.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1735878476309.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1735878476380.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1735878476546.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1735878476606.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584816302.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584816311.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584816321.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584816358.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584816371.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584816394.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584816432.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584816555.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584816575.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584816586.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584816606.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584816624.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584816706.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584816736.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584816744.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584816757.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584816793.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584816814.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584816907.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584816980.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584816988.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584817025.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584817039.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584817050.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584817060.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584817068.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/gallery/territory-nature/1766584817085.jpg"
+        },
+        {
+          "type": "video",
+          "src": "assets/gallery/territory-nature/VID_20250728_211240.mp4"
+        },
+        {
+          "type": "video",
+          "src": "assets/gallery/territory-nature/VID_20251224_210151_499.mp4.mov"
+        }
+      ]
     }
   ],
   "itemSchema": {
