@@ -1,6 +1,7 @@
 {
   "version": 2,
   "builds": [
+    { "src": "api/*.js", "use": "@vercel/node" },
     { "src": "index.html", "use": "@vercel/static" },
     { "src": "styles.css", "use": "@vercel/static" },
     { "src": "app.js", "use": "@vercel/static" },
@@ -9,6 +10,7 @@
     { "src": "docs/**", "use": "@vercel/static" }
   ],
   "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1.js" },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
