@@ -13,7 +13,11 @@
       "description": "Небольшие домики среди природы для спокойного отдыха, пары или небольшой семьи.",
       "capacityMin": 2,
       "capacityMax": 4,
-      "features": ["Отдельный вход", "Санузел", "Вид на природу"],
+      "features": [
+        "Отдельный вход",
+        "Санузел",
+        "Вид на природу"
+      ],
       "price": {
         "mode": "request",
         "text": "Цена по запросу"
@@ -50,7 +54,7 @@
         },
         {
           "type": "video",
-          "src": "assets/gallery/rooms/domiki/InShot_20251224_171632950.mp4"
+          "src": "https://downloader.disk.yandex.ru/disk/be77213c0f61f4e452794296025e2451d68274abb1540cb92fb8f491833fbdce/69511d7a/AMGSe-6UDk34UcIiUcC-ZJsJ5fZIzjN0RHoKhl6Tr7pDjB0ir56Bhj94uBDCowv_m0vcW8tdGAzr60V4VRIWFA%3D%3D?uid=0&filename=InShot_20251224_171632950.mp4&disposition=attachment&hash=&limit=0&content_type=video%2Fmp4&owner_uid=0&fsize=51481325&hid=b3da5f066b51e52caf5166f6d916690a&media_type=video&tknv=v3&etag=63f485ce354191f3e9b2519fbae57deb"
         }
       ]
     },
@@ -61,7 +65,11 @@
       "description": "Отдельные коттеджи с просторными зонами отдыха для комфортного размещения группы.",
       "capacityMin": 4,
       "capacityMax": 8,
-      "features": ["Просторная гостиная", "Несколько спален", "Санузел"],
+      "features": [
+        "Просторная гостиная",
+        "Несколько спален",
+        "Санузел"
+      ],
       "price": {
         "mode": "request",
         "text": "Цена по запросу"
@@ -90,11 +98,11 @@
         },
         {
           "type": "video",
-          "src": "assets/gallery/rooms/cottages/InShot_20251224_170924611.mp4"
+          "src": "https://downloader.disk.yandex.ru/disk/e22406c415ec528d5621fc66c7896c9e5ab5fcf87d126c783a1ebf3314645150/69511d7b/AMGSe-6UDk34UcIiUcC-ZPIJiZjMRzRBuyYpBiLVm9i_4GKByEKrMxp9QF-0U_E_Eq1VjBaQbGE9OUPkgc5H7Q%3D%3D?uid=0&filename=InShot_20251224_170924611.mp4&disposition=attachment&hash=&limit=0&content_type=video%2Fmp4&owner_uid=0&fsize=50868390&hid=f48d03c22ad6a1c4f95e931f6513bc9a&media_type=video&tknv=v3&etag=0f32bfe30136cd43f0a1a976421d51df"
         },
         {
           "type": "video",
-          "src": "assets/gallery/rooms/cottages/InShot_20251227_192742066.mp4"
+          "src": "https://downloader.disk.yandex.ru/disk/e1cc6178057b59be360166d33f2a3cf441555ad55ff4a58f8dd71a869936894b/69511d7c/AMGSe-6UDk34UcIiUcC-ZF1HUlahlpXAp900sk_zp2Nht141FzrqkyvbsFkK8Z3HYVa1jYocMYWRy7m1z7KHVA%3D%3D?uid=0&filename=InShot_20251227_192742066.mp4&disposition=attachment&hash=&limit=0&content_type=video%2Fmp4&owner_uid=0&fsize=55396558&hid=f3febef565fc8cfbd2134e923dc27454&media_type=video&tknv=v3&etag=1cf088d796a9638d59e8c7ffccc393dc"
         }
       ]
     },
@@ -105,7 +113,11 @@
       "description": "Двухуровневые таунхаусы с удобной планировкой для спокойного отдыха.",
       "capacityMin": 3,
       "capacityMax": 6,
-      "features": ["Два уровня", "Санузел", "Зона отдыха"],
+      "features": [
+        "Два уровня",
+        "Санузел",
+        "Зона отдыха"
+      ],
       "price": {
         "mode": "request",
         "text": "Цена по запросу"
@@ -142,7 +154,7 @@
         },
         {
           "type": "video",
-          "src": "assets/gallery/rooms/townhouses/InShot_20251212_165655500.mp4"
+          "src": "https://downloader.disk.yandex.ru/disk/57f3246feaef1c8682958492e8c236d6e119447ee9ba220e13f0f753fa641eb8/69511d7d/AMGSe-6UDk34UcIiUcC-ZHMKnTB1wu5fEoApqV3sD2q587divIYy7rmChx0CXb1xP6meGc6Nbr-q1DoBq13Hiw%3D%3D?uid=0&filename=InShot_20251212_165655500.mp4&disposition=attachment&hash=&limit=0&content_type=video%2Fmp4&owner_uid=0&fsize=69389206&hid=4fb5a0031a3a4e62094986f36290e2a9&media_type=video&tknv=v3&etag=1793f1cd9c35422a173281c8acd8398c"
         }
       ]
     }
