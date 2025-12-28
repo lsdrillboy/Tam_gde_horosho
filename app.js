@@ -429,8 +429,6 @@ function renderHome() {
     <section class="hero">
       ${heroMedia}
       <div class="hero__content">
-        <div class="hero__kicker">${home.hero.kicker}</div>
-        <h1>${home.hero.title}</h1>
         <div class="hero__subtitle">${home.hero.subtitle}</div>
         <p class="hero__description">${home.hero.description}</p>
         <div class="hero__actions">
