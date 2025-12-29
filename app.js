@@ -269,6 +269,9 @@ function renderRoute(path, query) {
   if (parts[0] === "master") {
     return renderMasterDetail(parts[1], query);
   }
+  if (parts[0] === "program") {
+    return renderProgramDetail(query);
+  }
 
   switch (path) {
     case "/":
@@ -720,20 +723,47 @@ function renderRoomDetail(roomId) {
 function renderServices() {
   const { services } = state.data;
 
-  const extras = services.extras.items
-    .map(
-      (item) => `
-        <button class="service-card" data-nav=\"#/service/${item.id}\">
-          <div class="service-card__icon">${renderIcon(item.icon)}</div>
-          <div class="service-card__content">
-            <div class="service-card__title">${item.title}</div>
-            <div class="service-card__text clamp-1">${item.short}</div>
+  const extrasItems = services.extras.items || [];
+  const renderServiceCard = (item) => `
+    <button class="service-card" data-nav=\"#/service/${item.id}\">
+      <div class="service-card__icon">${renderIcon(item.icon)}</div>
+      <div class="service-card__content">
+        <div class="service-card__title">${item.title}</div>
+        <div class="service-card__text clamp-1">${item.short}</div>
+      </div>
+      <div class="service-card__more">Подробнее</div>
+    </button>
+  `;
+
+  const groups = services.extras.groups || [];
+  const extrasById = new Map(extrasItems.map((item) => [item.id, item]));
+  const groupedIds = new Set();
+  const groupedSections = groups
+    .map((group) => {
+      const groupItems = (group.items || [])
+        .map((id) => extrasById.get(id))
+        .filter(Boolean);
+      groupItems.forEach((item) => groupedIds.add(item.id));
+      if (!groupItems.length) return "";
+      return `
+        <div class="service-group">
+          <h3 class="service-group__title">${group.title}</h3>
+          <div class="service-grid">
+            ${groupItems.map(renderServiceCard).join("")}
           </div>
-          <div class="service-card__more">Подробнее</div>
-        </button>
-      `
-    )
+        </div>
+      `;
+    })
     .join("");
+
+  const ungroupedItems = extrasItems.filter((item) => !groupedIds.has(item.id));
+  const ungroupedMarkup = ungroupedItems.length
+    ? `<div class="service-grid">${ungroupedItems.map(renderServiceCard).join("")}</div>`
+    : "";
+
+  const extrasMarkup = groups.length
+    ? `${ungroupedMarkup}${groupedSections}`
+    : `<div class="service-grid">${extrasItems.map(renderServiceCard).join("")}</div>`;
 
   const supportCards = services.organizerSupport.items
     .map(
@@ -756,9 +786,7 @@ function renderServices() {
     </section>
     <section class="section">
       <h2 class="section-title">${services.extras.title}</h2>
-      <div class="service-grid">
-        ${extras}
-      </div>
+      ${extrasMarkup}
     </section>
     <section class="section">
       <h2 class="section-title">${services.organizerSupport.title}</h2>
@@ -982,23 +1010,39 @@ function renderMasters() {
       const tags = (master.tags || []).map((tag) => `<span class="master-chip">${tag}</span>`).join("");
       const anchor = master.anchor || master.bioShort || "";
       const priceLine = master.priceLine || "";
+      const priceParts = priceLine
+        .split("•")
+        .map((part) => part.trim())
+        .filter(Boolean);
+      const priceMarkup = priceParts.length > 1
+        ? `
+          <span class="master-card__price-amount">${priceParts[0]}</span>
+          <span class="master-card__price-divider">•</span>
+          <span class="master-card__price-duration">${priceParts.slice(1).join(" • ")}</span>
+        `
+        : `<span class="master-card__price-amount">${priceLine}</span>`;
       const detailRoute = `#/master/${master.id}`;
       const focusRoute = master.practices?.length ? `${detailRoute}?focus=practices` : detailRoute;
       const ctaLabel = master.cardCtaLabel || "Подробнее";
+      const roleMarkup = master.role ? `<div class="master-card__role">${master.role}</div>` : "";
       return `
-        <article class="master-card master-card--premium" data-nav="${detailRoute}">
+        <article class="master-card master-card--premium" data-nav="${detailRoute}" data-master-id="${master.id}">
           <div class="avatar">${avatar}</div>
           <div class="master-card__content">
-            <h3 class="master-card__name">${master.name}</h3>
-            <div class="master-card__role">${master.role || ""}</div>
-            ${tags ? `<div class="master-card__chips">${tags}</div>` : ""}
-            ${anchor ? `<div class="master-card__anchor clamp-1">${anchor}</div>` : ""}
-            ${priceLine ? `<div class="master-card__price">${priceLine}</div>` : ""}
-            <div class="master-card__actions">
-              <button class="btn btn--primary btn--small" data-nav="${focusRoute}">${ctaLabel}</button>
+            <div class="master-card__header">
+              <div class="master-card__identity">
+                <h3 class="master-card__name clamp-2">${master.name}</h3>
+                ${roleMarkup}
+              </div>
               <button class="btn btn--ghost btn--icon master-card__share" type="button" data-share-master="${master.id}" data-share-title="${master.name}" data-share-text="Мастер: ${master.name}" aria-label="Поделиться">
                 ${renderIcon("share")}
               </button>
+            </div>
+            ${tags ? `<div class="master-card__chips">${tags}</div>` : ""}
+            ${anchor ? `<div class="master-card__anchor clamp-1">${anchor}</div>` : ""}
+            ${priceLine ? `<div class="master-card__price">${priceMarkup}</div>` : ""}
+            <div class="master-card__actions">
+              <button class="btn btn--primary btn--small" data-nav="${focusRoute}">${ctaLabel}</button>
             </div>
           </div>
         </article>
@@ -1050,7 +1094,7 @@ function renderMasterDetail(masterId, query = new URLSearchParams()) {
     .join("");
 
   const practices = (master.practices || [])
-    .map((practice) => {
+    .map((practice, practiceIndex) => {
       const meta = [practice.format, practice.duration, practice.price].filter(Boolean);
       const metaMarkup = meta.map((item) => `<span class="badge">${item}</span>`).join("");
       const note = practice.note ? `<div class="practice-card__note">${practice.note}</div>` : "";
@@ -1062,7 +1106,9 @@ function renderMasterDetail(masterId, query = new URLSearchParams()) {
           } else if (action.type === "tour") {
             route = buildRequestRoute("turnkey", { comment: `Добавить в тур: ${practice.title}` });
           } else if (action.type === "program") {
-            route = buildRequestRoute("master", { masterId: master.id, comment: `Запросить программу: ${practice.title}` });
+            route = practice.program
+              ? `#/program?masterId=${master.id}&practiceIndex=${practiceIndex}`
+              : buildRequestRoute("master", { masterId: master.id, comment: `Запросить программу: ${practice.title}` });
           } else if (action.type === "inquiry") {
             route = buildRequestRoute("master", { masterId: master.id, comment: `Запрос: ${practice.title}` });
           } else {
@@ -1105,7 +1151,7 @@ function renderMasterDetail(masterId, query = new URLSearchParams()) {
     : "";
 
   const content = `
-    <section class="master-hero ${heroImage ? "" : "master-hero--placeholder"}" ${heroImage ? `style="background-image: url('${heroImage}')"` : ""}>
+    <section class="master-hero ${heroImage ? "" : "master-hero--placeholder"}" data-master-id="${master.id}" ${heroImage ? `style="background-image: url('${heroImage}')"` : ""}>
       <div class="master-hero__actions">
         <button class="btn btn--ghost btn--icon master-hero__action" type="button" data-share-master="${master.id}" data-share-title="${master.name}" data-share-text="Мастер: ${master.name}" aria-label="Поделиться">
           ${renderIcon("share")}
@@ -1164,6 +1210,67 @@ function renderMasterDetail(masterId, query = new URLSearchParams()) {
       bindMasterProfile(query);
     }
   };
+}
+
+function renderProgramDetail(query) {
+  const { masters } = state.data;
+  const masterId = query?.get("masterId");
+  const practiceIndex = Number(query?.get("practiceIndex"));
+  const master = masters.items.find((item) => item.id === masterId);
+  const practice = master?.practices?.[practiceIndex];
+  const program = practice?.program;
+  if (!master || !practice || !program) {
+    return renderNotFound();
+  }
+
+  const steps = (program.steps || [])
+    .map((step) => `<li>${step}</li>`)
+    .join("");
+  const extras = program.extra?.items?.length
+    ? `
+      <section class="card">
+        <h2 class="section-title">${program.extra.title || "Дополнительно"}</h2>
+        <ul class="list list--bulleted">
+          ${program.extra.items.map((item) => `<li>${item}</li>`).join("")}
+        </ul>
+      </section>
+    `
+    : "";
+  const note = program.note
+    ? `
+      <section class="card">
+        <h2 class="section-title">Важно</h2>
+        <p class="card__text">${program.note}</p>
+      </section>
+    `
+    : "";
+
+  const content = `
+    <section class="page-hero">
+      <h1 class="page-title">${program.title || practice.title}</h1>
+      <div class="page-subtitle">${master.name} • ${master.role || "Мастер"}</div>
+    </section>
+    <section class="card">
+      <h2 class="section-title">${program.stepsTitle || "Как проходит церемония"}</h2>
+      <ol class="list list--numbered">
+        ${steps}
+      </ol>
+    </section>
+    ${extras}
+    ${note}
+    <div class="cta-panel">
+      <div>
+        <h2 class="section-title">Запросить проведение</h2>
+        <div class="section-subtitle">Ответим по формату и доступности.</div>
+      </div>
+      <div class="cta-panel__actions">
+        <button class="btn btn--primary" data-nav="#/request/master?masterId=${master.id}&comment=${encodeURIComponent(`Программа: ${practice.title}`)}">Запросить проведение</button>
+        <button class="btn btn--ghost" data-nav="#/contact">Связаться</button>
+      </div>
+    </div>
+  `;
+
+  return renderShell({ content, activeTab: "masters" });
 }
 
 function renderPractices() {

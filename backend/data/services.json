@@ -1,6 +1,36 @@
 {
   "extras": {
     "title": "Доп. услуги гостям",
+    "groups": [
+      {
+        "id": "psyche",
+        "title": "Подсознание и психика",
+        "items": [
+          "subconscious",
+          "nails",
+          "reimprinting",
+          "reframing"
+        ]
+      },
+      {
+        "id": "ceremonies",
+        "title": "Церемонии и авторские программы",
+        "items": [
+          "tea",
+          "cacao-ceremony",
+          "return-to-nature",
+          "wish-window",
+          "dark-retreats"
+        ]
+      },
+      {
+        "id": "art",
+        "title": "Арт-терапия",
+        "items": [
+          "art-therapy"
+        ]
+      }
+    ],
     "items": [
       {
         "id": "bath",
@@ -410,7 +440,48 @@
           "Выбор программы",
           "Расслабляющая атмосфера"
         ],
-        "photos": [],
+        "photos": [
+          {
+            "type": "image",
+            "src": "assets/services/massage/1766914506307.jpg"
+          },
+          {
+            "type": "image",
+            "src": "assets/services/massage/1766914506312.jpg"
+          },
+          {
+            "type": "image",
+            "src": "assets/services/massage/1766914506318.jpg"
+          },
+          {
+            "type": "image",
+            "src": "assets/services/massage/1766914506323.jpg"
+          },
+          {
+            "type": "image",
+            "src": "assets/services/massage/1766914506328.jpg"
+          },
+          {
+            "type": "image",
+            "src": "assets/services/massage/1766914506334.jpg"
+          },
+          {
+            "type": "image",
+            "src": "assets/services/massage/1766914506339.jpg"
+          },
+          {
+            "type": "image",
+            "src": "assets/services/massage/1766914506344.jpg"
+          },
+          {
+            "type": "image",
+            "src": "assets/services/massage/1766914506351.jpg"
+          },
+          {
+            "type": "image",
+            "src": "assets/services/massage/1766914506357.jpg"
+          }
+        ],
         "faq": [
           {
             "question": "Сколько мастеров одновременно?",
@@ -496,6 +567,50 @@
         "icon": "spark"
       },
       {
+        "id": "reimprinting",
+        "title": "Реймпринтинг",
+        "short": "Работа с глубинными сценариями и переживаниями.",
+        "description": "Работа с глубинными сценариями и переживаниями.",
+        "params": [
+          {
+            "label": "Формат",
+            "value": "индивидуально"
+          },
+          {
+            "label": "Цена",
+            "value": "по запросу"
+          }
+        ],
+        "includes": [
+          "Подробности по запросу"
+        ],
+        "photos": [],
+        "faq": [],
+        "icon": "craft"
+      },
+      {
+        "id": "reframing",
+        "title": "6-ти шаговый рейфрейминг",
+        "short": "Мягкая смена ограничивающих установок.",
+        "description": "Мягкая смена ограничивающих установок.",
+        "params": [
+          {
+            "label": "Формат",
+            "value": "индивидуально"
+          },
+          {
+            "label": "Цена",
+            "value": "по запросу"
+          }
+        ],
+        "includes": [
+          "Подробности по запросу"
+        ],
+        "photos": [],
+        "faq": [],
+        "icon": "spark"
+      },
+      {
         "id": "tea",
         "title": "Чайная церемония",
         "short": "Погружение в чайную традицию.",
@@ -516,6 +631,116 @@
         "photos": [],
         "faq": [],
         "icon": "tea"
+      },
+      {
+        "id": "cacao-ceremony",
+        "title": "Какао церемония",
+        "short": "Теплая групповая церемония с какао.",
+        "description": "Теплая групповая церемония с какао.",
+        "params": [
+          {
+            "label": "Формат",
+            "value": "группа"
+          },
+          {
+            "label": "Цена",
+            "value": "по запросу"
+          }
+        ],
+        "includes": [
+          "Подробности по запросу"
+        ],
+        "photos": [],
+        "faq": [],
+        "icon": "drum"
+      },
+      {
+        "id": "return-to-nature",
+        "title": "Возвращение к Естеству",
+        "short": "Однодневная программа для глубокой перезагрузки.",
+        "description": "Однодневная программа для глубокой перезагрузки.",
+        "params": [
+          {
+            "label": "Формат",
+            "value": "группа"
+          },
+          {
+            "label": "Цена",
+            "value": "по запросу"
+          }
+        ],
+        "includes": [
+          "Подробности по запросу"
+        ],
+        "photos": [],
+        "faq": [],
+        "icon": "leaf"
+      },
+      {
+        "id": "wish-window",
+        "title": "Окно Желаний",
+        "short": "Сакральная церемония намерения.",
+        "description": "Сакральная церемония намерения.",
+        "params": [
+          {
+            "label": "Формат",
+            "value": "индивидуально / группа"
+          },
+          {
+            "label": "Цена",
+            "value": "по запросу"
+          }
+        ],
+        "includes": [
+          "Подробности по запросу"
+        ],
+        "photos": [],
+        "faq": [],
+        "icon": "spark"
+      },
+      {
+        "id": "dark-retreats",
+        "title": "Темные ретриты",
+        "short": "Погружение в тишину и темноту.",
+        "description": "Погружение в тишину и темноту.",
+        "params": [
+          {
+            "label": "Формат",
+            "value": "индивидуально / группа"
+          },
+          {
+            "label": "Цена",
+            "value": "по запросу"
+          }
+        ],
+        "includes": [
+          "Подробности по запросу"
+        ],
+        "photos": [],
+        "faq": [],
+        "icon": "silence"
+      },
+      {
+        "id": "art-therapy",
+        "title": "Арт-терапия",
+        "short": "Творческая практика для раскрытия и опоры.",
+        "description": "Творческая практика для раскрытия и опоры.",
+        "params": [
+          {
+            "label": "Формат",
+            "value": "группа / индивидуально"
+          },
+          {
+            "label": "Цена",
+            "value": "по запросу"
+          }
+        ],
+        "includes": [
+          "Подробности по запросу"
+        ],
+        "photos": [],
+        "faq": [],
+        "icon": "brush"
       }
     ]
   },
