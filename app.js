@@ -11,7 +11,9 @@ const state = {
     galleryAlbumId: null,
     lastSuccess: null,
     lastRoute: null,
-    lightbox: null
+    lightbox: null,
+    sidebarCollapsed: false,
+    currentPath: null
   }
 };
 
@@ -22,6 +24,7 @@ const dataFiles = {
   services: "data/services.json",
   masters: "data/masters.json",
   practices: "data/practices.json",
+  events: "data/events.json",
   kitchen: "data/kitchen.json",
   gallery: "data/gallery.json",
   shop: "data/shop.json",
@@ -65,14 +68,31 @@ const ICONS = {
   chevron: "<path d=\"m6 9 6 6 6-6\" />",
   back: "<path d=\"m12 19-7-7 7-7\" /><path d=\"M19 12H5\" />",
   share: "<circle cx=\"18\" cy=\"5\" r=\"3\" /><circle cx=\"6\" cy=\"12\" r=\"3\" /><circle cx=\"18\" cy=\"19\" r=\"3\" /><line x1=\"8.59\" x2=\"15.42\" y1=\"13.51\" y2=\"17.49\" /><line x1=\"15.41\" x2=\"8.59\" y1=\"6.51\" y2=\"10.49\" />",
+  heart: "<path d=\"M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78Z\" />",
+  clock: "<circle cx=\"12\" cy=\"12\" r=\"9\" /><path d=\"M12 7v5l3 3\" />",
+  bell: "<path d=\"M18 8a6 6 0 0 0-12 0c0 7-3 7-3 7h18s-3 0-3-7\" /><path d=\"M13.73 21a2 2 0 0 1-3.46 0\" />",
+  moon: "<path d=\"M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z\" />",
+  breath: "<path d=\"M2 12c2.5-2.5 5.5-2.5 8 0s5.5 2.5 8 0\" /><path d=\"M4 6c1.5-1.5 3.5-1.5 5 0\" /><path d=\"M4 18c1.5 1.5 3.5 1.5 5 0\" />",
+  steps: "<path d=\"M4.5 7.5c0 1.66 1.34 3 3 3s3-1.34 3-3-1.34-4-3-4-3 2.34-3 4Z\" /><path d=\"M5 20c0 1.1.9 2 2 2s2-.9 2-2-.9-3-2-3-2 1.9-2 3Z\" /><path d=\"M14.5 6.5c0 1.66 1.34 3 3 3s3-1.34 3-3-1.34-4-3-4-3 2.34-3 4Z\" /><path d=\"M15 19c0 1.1.9 2 2 2s2-.9 2-2-.9-3-2-3-2 1.9-2 3Z\" />"
 
 };
+
+const EVENT_TYPE_LABELS = {
+  event: "Практика",
+  retreat: "Ретрит"
+};
+
+const SAVED_EVENTS_KEY = "saved-events";
+
+const EVENT_DATE_FORMATTER = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long" });
+const EVENT_DATE_WITH_YEAR_FORMATTER = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long", year: "numeric" });
 
 init();
 
 async function init() {
   initTelegram();
   await loadData();
+  loadSidebarState();
   if (window.location.hash !== "#/home") {
     window.location.hash = "#/home";
   }
@@ -88,6 +108,29 @@ function initTelegram() {
   if (!tg) return;
   tg.ready();
   tg.expand();
+}
+
+function loadSidebarState() {
+  try {
+    const stored = window.localStorage.getItem("sidebar-collapsed");
+    if (stored !== null) {
+      state.ui.sidebarCollapsed = stored === "true";
+    }
+  } catch (error) {
+    state.ui.sidebarCollapsed = false;
+  }
+}
+
+function saveSidebarState() {
+  try {
+    window.localStorage.setItem("sidebar-collapsed", String(state.ui.sidebarCollapsed));
+  } catch (error) {
+    // Ignore storage errors (private mode, disabled storage).
+  }
+}
+
+function applySidebarState() {
+  document.body.classList.toggle("sidebar-collapsed", state.ui.sidebarCollapsed);
 }
 
 function renderIcon(name, className = "") {
@@ -243,11 +286,18 @@ function render() {
     return;
   }
 
+  applySidebarState();
   const { path, query } = parseRoute();
+  const shouldScrollToTop = path !== state.ui.currentPath;
   const content = renderRoute(path, query);
   appRoot.innerHTML = content.html;
   bindNavigation();
+  bindSidebarToggle();
   bindShareButtons();
+  if (shouldScrollToTop) {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    state.ui.currentPath = path;
+  }
   if (content.bind) {
     content.bind();
   }
@@ -269,6 +319,9 @@ function renderRoute(path, query) {
   if (parts[0] === "master") {
     return renderMasterDetail(parts[1], query);
   }
+  if (parts[0] === "event") {
+    return renderEventDetail(parts[1]);
+  }
   if (parts[0] === "program") {
     return renderProgramDetail(query);
   }
@@ -289,6 +342,8 @@ function renderRoute(path, query) {
       return renderKitchen();
     case "/gallery":
       return renderGallery(query);
+    case "/events":
+      return renderEvents(query);
     case "/shop":
       return renderShop();
     case "/contact":
@@ -354,8 +409,12 @@ function renderTabBar(activeTab) {
     { id: "accommodation", label: "Размещение", route: "/accommodation", icon: "bed" },
     { id: "services", label: "Услуги", route: "/services", icon: "spark" },
     { id: "masters", label: "Мастера", route: "/masters", icon: "masters" },
+    { id: "events", label: "Афиша", route: "/events", icon: "calendar" },
     { id: "contact", label: "Контакты", route: "/contact", icon: "chat" }
   ];
+  const collapsed = state.ui.sidebarCollapsed;
+  const toggleLabel = collapsed ? "Развернуть" : "Свернуть";
+  const toggleTitle = collapsed ? "Развернуть меню" : "Свернуть меню";
 
   const items = tabs
     .map(
@@ -368,13 +427,22 @@ function renderTabBar(activeTab) {
     )
     .join("");
 
-  return `<nav class="tabbar">${items}</nav>`;
+  return `
+    <nav class="tabbar">
+      <button class="sidebar-toggle" type="button" data-sidebar-toggle aria-expanded="${!collapsed}" aria-label="${toggleTitle}" title="${toggleTitle}">
+        ${renderIcon("chevron", "sidebar-toggle__icon")}
+        <span class="sidebar-toggle__label">${toggleLabel}</span>
+      </button>
+      ${items}
+    </nav>
+  `;
 }
 
 function getActiveTab(path) {
   if (path.startsWith("/accommodation")) return "accommodation";
   if (path.startsWith("/services") || path.startsWith("/practices") || path.startsWith("/kitchen") || path.startsWith("/service")) return "services";
   if (path.startsWith("/masters") || path.startsWith("/master")) return "masters";
+  if (path.startsWith("/events")) return "events";
   if (path.startsWith("/contact") || path.startsWith("/request")) return "contact";
   return "home";
 }
@@ -682,7 +750,7 @@ function renderRoomDetail(roomId) {
     <section class="card card--strong">
       ${carousel}
     </section>
-    <section class="card">
+    <section class="card card--contacts">
       <h2 class="section-title">Описание</h2>
       <p class="card__text">${room.description}</p>
       <div class="pill-row">
@@ -951,10 +1019,11 @@ function renderServiceDetail(serviceId) {
       `;
     })
     .join("");
+  const programsTitle = service.detail?.programsTitle || "Программы массажа";
   const programsSection = programCards
     ? `
       <section class="section">
-        <h2 class="section-title">Программы массажа</h2>
+        <h2 class="section-title">${programsTitle}</h2>
         <div class="master-practices">
           ${programCards}
         </div>
@@ -1004,8 +1073,9 @@ function renderMasters() {
   const { masters } = state.data;
   const cards = masters.items
     .map((master) => {
+      const avatarPosition = master.avatarPosition ? ` style="object-position: ${master.avatarPosition};"` : "";
       const avatar = master.photos?.[0]
-        ? `<img src="${master.photos[0]}" alt="${master.name}" />`
+        ? `<img src="${master.photos[0]}" alt="${master.name}"${avatarPosition} />`
         : `<span class="avatar__placeholder">${master.name.charAt(0)}</span>`;
       const tags = (master.tags || []).map((tag) => `<span class="master-chip">${tag}</span>`).join("");
       const anchor = master.anchor || master.bioShort || "";
@@ -1025,6 +1095,7 @@ function renderMasters() {
       const focusRoute = master.practices?.length ? `${detailRoute}?focus=practices` : detailRoute;
       const ctaLabel = master.cardCtaLabel || "Подробнее";
       const roleMarkup = master.role ? `<div class="master-card__role">${master.role}</div>` : "";
+      const tourRoute = buildRequestRoute("turnkey", { comment: `Добавить в тур: ${master.name}` });
       return `
         <article class="master-card master-card--premium" data-nav="${detailRoute}" data-master-id="${master.id}">
           <div class="avatar">${avatar}</div>
@@ -1043,6 +1114,7 @@ function renderMasters() {
             ${priceLine ? `<div class="master-card__price">${priceMarkup}</div>` : ""}
             <div class="master-card__actions">
               <button class="btn btn--primary btn--small" data-nav="${focusRoute}">${ctaLabel}</button>
+              <button class="btn btn--ghost btn--small" data-nav="${tourRoute}">Добавить к туру</button>
             </div>
           </div>
         </article>
@@ -1094,35 +1166,35 @@ function renderMasterDetail(masterId, query = new URLSearchParams()) {
     .join("");
 
   const practices = (master.practices || [])
-    .map((practice, practiceIndex) => {
+    .map((practice) => {
       const meta = [practice.format, practice.duration, practice.price].filter(Boolean);
       const metaMarkup = meta.map((item) => `<span class="badge">${item}</span>`).join("");
       const note = practice.note ? `<div class="practice-card__note">${practice.note}</div>` : "";
-      const actions = (practice.actions || [])
-        .map((action, index) => {
-          let route = "";
-          if (action.route) {
-            route = action.route;
-          } else if (action.type === "tour") {
-            route = buildRequestRoute("turnkey", { comment: `Добавить в тур: ${practice.title}` });
-          } else if (action.type === "program") {
-            route = practice.program
-              ? `#/program?masterId=${master.id}&practiceIndex=${practiceIndex}`
-              : buildRequestRoute("master", { masterId: master.id, comment: `Запросить программу: ${practice.title}` });
-          } else if (action.type === "inquiry") {
-            route = buildRequestRoute("master", { masterId: master.id, comment: `Запрос: ${practice.title}` });
-          } else {
-            route = buildRequestRoute("master", { masterId: master.id, comment: `Практика: ${practice.title}` });
+      const actions = [
+        {
+          label: "Добавить к туру",
+          variant: "primary",
+          route: buildRequestRoute("turnkey", { comment: `Добавить в тур: ${practice.title}` })
+        },
+        practice.serviceId
+          ? {
+            label: "Смотреть программу",
+            variant: "ghost",
+            route: `#/service/${practice.serviceId}`
           }
-
-          const variant = action.variant || (index === 0 ? "primary" : "ghost");
-          const size = action.size === "normal" ? "" : "btn--small";
-          return `
-            <button class="btn btn--${variant} ${size}" data-nav="${route}">
-              ${action.label}
-            </button>
-          `;
-        })
+          : null,
+        {
+          label: "Запросить проведение",
+          variant: "ghost",
+          route: buildRequestRoute("master", { masterId: master.id, comment: `Практика: ${practice.title}` })
+        }
+      ]
+        .filter(Boolean)
+        .map((action) => `
+          <button class="btn btn--${action.variant} btn--small" data-nav="${action.route}">
+            ${action.label}
+          </button>
+        `)
         .join("");
 
       return `
@@ -1592,6 +1664,861 @@ function renderShop() {
   return renderShell({ content, activeTab: "home" });
 }
 
+function renderEvents(query) {
+  const payload = state.data.events || {};
+  const items = Array.isArray(payload.items) ? payload.items : Array.isArray(payload) ? payload : null;
+  const showYear = Boolean(payload.showYear);
+  const isLoading = !Array.isArray(items);
+  const events = isLoading ? [] : [...items].sort((a, b) => getEventSortValue(a) - getEventSortValue(b));
+
+  const cards = isLoading
+    ? renderEventSkeletons(4)
+    : events.map((event, index) => renderEventCard(event, index, { showYear })).join("");
+  const emptyState = !isLoading && events.length === 0 ? "<div class=\"card\">Пока нет ближайших мероприятий</div>" : "";
+
+  const selectedId = query?.get("event");
+  const selectedEvent = !isLoading && selectedId ? items.find((event) => event.id === selectedId) : null;
+  const modal = selectedEvent ? renderEventModal(selectedEvent, showYear) : "";
+
+  const content = `
+    <section class="page-hero">
+      <h1 class="page-title">Афиша</h1>
+      <div class="page-subtitle">Ближайшие мероприятия и ретриты</div>
+    </section>
+    <section class="events-grid">
+      ${cards || emptyState}
+    </section>
+    ${modal}
+  `;
+
+  return {
+    ...renderShell({ content, activeTab: "events" }),
+    bind: bindEventCards
+  };
+}
+
+function renderEventCard(event, index, options = {}) {
+  const dateLabel = formatEventDateRange(event.startDate, event.endDate, options.showYear);
+  const typeLabel = EVENT_TYPE_LABELS[event.type] || "";
+  const statusLabel = getEventStatusLabel(event);
+  const themeClass = `event-card--${getEventTheme(event)}`;
+  const isFeatured = index === 0;
+  const highlight = isFeatured ? getEventCountdownLabel(event, options) : "";
+  const metaLine = renderEventMetaLine(dateLabel, event.location);
+  const cardDescription = event.cardDescription
+    ?? (Array.isArray(event.description) ? event.description[0] : event.description);
+  const description = cardDescription ? `<p class="card__text">${cardDescription}</p>` : "";
+  const hosts = Array.isArray(event.hosts) ? event.hosts.join(", ") : event.hosts;
+  const hostsLink = event.hostsLink || "";
+  const hostsMarkup = hostsLink && hosts
+    ? `<a class="event-card__host-link" href="${hostsLink}">${hosts}</a>`
+    : hosts;
+  const program = Array.isArray(event.program) ? event.program.join(" • ") : event.program;
+  const hostsLabel = event.hostsLabel || "Ведущие";
+  const programLabel = event.programLabel || "Программа";
+  const details = [
+    hosts ? `<div class="event-card__detail"><span class="event-card__detail-label">${hostsLabel}:</span><span>${hostsMarkup}</span></div>` : "",
+    program ? `<div class="event-card__detail"><span class="event-card__detail-label">${programLabel}:</span><span>${program}</span></div>` : ""
+  ]
+    .filter(Boolean)
+    .join("");
+  const detailsMarkup = details ? `<div class="event-card__details">${details}</div>` : "";
+  const cover = event.cover || "";
+  const coverMarkup = cover
+    ? `<img class="event-card__cover-image" src="${cover}" alt="${event.title}" loading="lazy" />`
+    : "";
+  const cta = renderEventCTA(event);
+  const chips = [
+    typeLabel ? `<span class="event-chip">${typeLabel}</span>` : "",
+    statusLabel ? `<span class="event-chip event-chip--status">${statusLabel}</span>` : ""
+  ]
+    .filter(Boolean)
+    .join("");
+
+  return `
+    <article class="event-card ${themeClass}${isFeatured ? " event-card--featured" : ""} reveal" data-event-card data-event-id="${event.id}" style="--delay:${index * 40}ms">
+      <div class="event-card__actions">
+        <button class="event-card__action" type="button" data-event-save>Сохранить</button>
+        <button class="event-card__action event-card__action--share" type="button" data-share-event="${event.id}" data-share-title="${event.title}" data-share-text="${event.title}">
+          ${renderIcon("share")}
+          Поделиться
+        </button>
+      </div>
+      <div class="card event-card__content">
+        <div class="event-card__cover">
+          ${coverMarkup}
+        </div>
+        <div class="event-card__body">
+          ${chips ? `<div class="event-card__chips">${chips}</div>` : ""}
+          <h3 class="event-card__title">${event.title}</h3>
+          ${metaLine}
+          ${highlight ? `<div class="event-card__highlight">${highlight}</div>` : ""}
+          ${description}
+          ${detailsMarkup}
+          <div class="event-card__footer">
+            ${cta}
+          </div>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function renderEventCTA(event) {
+  const fallback = `#/event/${event.id}`;
+  const link = event.link || fallback;
+  if (!link) return "";
+  if (/^https?:\/\//.test(link)) {
+    return `<a class="btn btn--text btn--small event-card__cta" href="${link}" target="_blank" rel="noopener">Подробнее →</a>`;
+  }
+  const route = link.startsWith("#") ? link : `#${link}`;
+  return `<button class="btn btn--text btn--small event-card__cta" data-nav="${route}">Подробнее →</button>`;
+}
+
+function renderEventDetail(eventId) {
+  const payload = state.data.events || {};
+  const items = Array.isArray(payload.items) ? payload.items : Array.isArray(payload) ? payload : null;
+  if (!Array.isArray(items)) {
+    return renderNotFound();
+  }
+  const event = items.find((item) => item.id === eventId);
+  if (!event) {
+    return renderNotFound();
+  }
+
+  const showYear = Boolean(payload.showYear);
+  const dateLabel = formatEventDateRange(event.startDate, event.endDate, showYear);
+  const typeLabel = EVENT_TYPE_LABELS[event.type] || "";
+  const statusLabel = getEventStatusLabel(event);
+  const chips = [
+    typeLabel ? `<span class="event-chip">${typeLabel}</span>` : "",
+    statusLabel ? `<span class="event-chip event-chip--status">${statusLabel}</span>` : ""
+  ]
+    .filter(Boolean)
+    .join("");
+  const hosts = Array.isArray(event.hosts) ? event.hosts.join(", ") : event.hosts;
+  const hostsLink = event.hostsLink || "";
+  const hostsLabel = event.hostsLabel || "Ведущие";
+  const hostsMarkup = hostsLink && hosts
+    ? `<a class="event-card__host-link" href="${hostsLink}">${hosts}</a>`
+    : hosts;
+  const subtitle = event.subtitle
+    || event.cardDescription
+    || (typeof event.description === "string" ? event.description : "");
+  const infoNote = event.infoNote || "Подробности и запись — через менеджера.";
+  const durationLabel = getEventDurationLabel(event);
+  const hostProfiles = Array.isArray(event.hostProfiles) ? event.hostProfiles : [];
+  const hostsSummary = hostProfiles.length
+    ? hostProfiles.map((profile) => profile.name).filter(Boolean).join(", ")
+    : hosts;
+
+  const galleryAlbumId = event.galleryAlbumId || "";
+  const galleryAlbum = galleryAlbumId && state.data.gallery?.albums
+    ? state.data.gallery.albums.find((album) => album.id === galleryAlbumId)
+    : null;
+  const rawGalleryItems = Array.isArray(event.gallery)
+    ? event.gallery
+    : (galleryAlbum?.items || []);
+  const galleryItems = rawGalleryItems
+    .map(normalizeMediaItem)
+    .filter((item) => item.src && item.type !== "video")
+    .slice(0, 8);
+  const cover = event.cover || (galleryItems[0]?.src || "");
+  const themeClass = getEventTheme(event);
+  const hero = `
+    <section class="event-hero event-hero--${themeClass}${cover ? "" : " event-hero--placeholder"}"${cover ? ` style="background-image: url('${cover}')"` : ""}>
+      <div class="event-hero__actions">
+        <button class="event-hero__action" type="button" data-share-event="${event.id}" data-share-title="${event.title}" data-share-text="${event.title}" aria-label="Поделиться">
+          ${renderIcon("share")}
+          <span>Поделиться</span>
+        </button>
+      </div>
+      <div class="event-hero__content">
+        <h1 class="event-hero__title">${event.title}</h1>
+        ${subtitle ? `<div class="event-hero__subtitle">${subtitle}</div>` : ""}
+      </div>
+    </section>
+  `;
+
+  const quickFactValues = {
+    date: dateLabel || "по запросу",
+    location: event.location || "Алтай",
+    duration: durationLabel,
+    hosts: hostsSummary || "Уточняется",
+    format: event.formatShort || event.format || "",
+    audience: event.audienceShort
+      || (Array.isArray(event.audience) ? event.audience.join(" / ") : event.audience || "")
+  };
+  const defaultQuickFacts = [
+    { icon: "calendar", label: "Дата", value: quickFactValues.date },
+    { icon: "pin", label: "Локация", value: quickFactValues.location },
+    { icon: "people", label: hostsLabel, value: quickFactValues.hosts },
+    { icon: "clock", label: "Длительность", value: quickFactValues.duration }
+  ];
+  const rawQuickFacts = Array.isArray(event.quickFacts) && event.quickFacts.length
+    ? event.quickFacts
+    : defaultQuickFacts;
+  const quickInfoItems = rawQuickFacts
+    .map((item) => {
+      const label = item.label || "";
+      const value = item.value ?? quickFactValues[item.valueKey];
+      if (!label || !value) return "";
+      const icon = item.icon || "spark";
+      return `
+        <div class="event-quick-item">
+          ${renderIcon(icon)}
+          <div>
+            <div class="event-quick-label">${label}</div>
+            <div class="event-quick-value">${value}</div>
+          </div>
+        </div>
+      `;
+    })
+    .filter(Boolean)
+    .join("");
+
+  const descriptionParts = Array.isArray(event.description)
+    ? event.description
+    : (event.description ? [event.description] : []);
+  const descriptionMarkup = descriptionParts.map((text) => `<p class="card__text">${text}</p>`).join("");
+  const audience = Array.isArray(event.audience) ? event.audience : [];
+  const audienceMarkup = audience.length
+    ? `<ul class="list list--bulleted">${audience.map((item) => `<li>${item}</li>`).join("")}</ul>`
+    : "";
+  const formatMarkup = event.format ? `<p class="card__text">${event.format}</p>` : "";
+  const introTitle = event.introTitle || "Описание";
+  const quoteMarkup = event.quote ? `<div class="note event-quote">${event.quote}</div>` : "";
+  const introSection = (descriptionMarkup || audienceMarkup || formatMarkup || quoteMarkup)
+    ? `
+      <section class="card event-intro">
+        <h2 class="section-title">${introTitle}</h2>
+        ${descriptionMarkup}
+        ${audienceMarkup ? `
+          <div class="event-intro__block">
+            <h3 class="card__title">Кому подойдёт</h3>
+            ${audienceMarkup}
+          </div>
+        ` : ""}
+        ${formatMarkup ? `
+          <div class="event-intro__block">
+            <h3 class="card__title">Формат</h3>
+            ${formatMarkup}
+          </div>
+        ` : ""}
+        ${quoteMarkup}
+      </section>
+    `
+    : "";
+
+  const programItems = Array.isArray(event.program)
+    ? event.program
+    : (event.program ? [event.program] : []);
+  const programPrimary = programItems.slice(0, 4);
+  const programSecondary = programItems.slice(4);
+  const renderProgramPills = (items) => items.map((item) => `<span class="event-pill">${item}</span>`).join("");
+  const programSection = programItems.length
+    ? `
+      <section class="card event-program">
+        <h2 class="section-title">Программа</h2>
+        <div class="event-pill-list">${renderProgramPills(programPrimary)}</div>
+        ${programSecondary.length
+          ? `
+            <details class="read-more event-program__more">
+              <summary class="event-program__summary">Показать полностью</summary>
+              <div class="event-pill-list">${renderProgramPills(programSecondary)}</div>
+            </details>
+          `
+          : ""
+        }
+      </section>
+    `
+    : "";
+
+  const scheduleItems = Array.isArray(event.schedule) ? event.schedule : [];
+  const scheduleNote = event.scheduleNote || "Примерное расписание";
+  const scheduleSection = scheduleItems.length
+    ? `
+      <section class="card event-schedule">
+        <div class="section-header">
+          <h2 class="section-title">Расписание</h2>
+          ${scheduleNote ? `<span class="event-schedule__note">${scheduleNote}</span>` : ""}
+        </div>
+        <div class="event-accordion">
+          ${scheduleItems.map((item) => {
+            const title = item.title || "";
+            const summaryText = item.summary
+              || (item.text ? `${title ? `${title} — ` : ""}${item.text}` : title);
+            const detailsText = item.details || item.note || "Подробные тайминги уточняем ближе к выезду.";
+            const iconMarkup = item.icon
+              ? `<span class="event-accordion__icon">${renderIcon(item.icon)}</span>`
+              : "";
+            return `
+              <details class="accordion-item">
+                <summary>
+                  <span class="event-accordion__label">
+                    ${iconMarkup}
+                    <span>${summaryText}</span>
+                  </span>
+                  <span class="event-accordion__chevron">${renderIcon("chevron")}</span>
+                </summary>
+                ${detailsText ? `<div class="accordion-content">${detailsText}</div>` : ""}
+              </details>
+            `;
+          }).join("")}
+        </div>
+      </section>
+    `
+    : "";
+
+  const silenceRules = Array.isArray(event.silenceRules) ? event.silenceRules : [];
+  const silenceSection = silenceRules.length
+    ? `
+      <section class="card event-silence">
+        <h2 class="section-title">Правила тишины</h2>
+        <div class="event-accordion">
+          ${silenceRules.map((rule) => {
+            const title = rule.title || "";
+            const text = rule.text || rule.description || "";
+            const iconMarkup = rule.icon
+              ? `<span class="event-accordion__icon">${renderIcon(rule.icon)}</span>`
+              : "";
+            return `
+              <details class="accordion-item">
+                <summary>
+                  <span class="event-accordion__label">
+                    ${iconMarkup}
+                    <span>${title}</span>
+                  </span>
+                  <span class="event-accordion__chevron">${renderIcon("chevron")}</span>
+                </summary>
+                ${text ? `<div class="accordion-content">${text}</div>` : ""}
+              </details>
+            `;
+          }).join("")}
+        </div>
+      </section>
+    `
+    : "";
+
+  const dailyRoutine = Array.isArray(event.dailyRoutine) ? event.dailyRoutine : [];
+  const dailyRoutineSection = dailyRoutine.length
+    ? `
+      <section class="card event-routine">
+        <h2 class="section-title">Распорядок дня</h2>
+        <ul class="event-icon-list">
+          ${dailyRoutine.map((item) => {
+            const text = typeof item === "string" ? item : (item.text || "");
+            if (!text) return "";
+            const iconName = typeof item === "string" ? "" : (item.icon || "");
+            const iconMarkup = iconName ? renderIcon(iconName) : "";
+            return `
+              <li class="event-icon-item">
+                ${iconMarkup}
+                <span>${text}</span>
+              </li>
+            `;
+          }).filter(Boolean).join("")}
+        </ul>
+      </section>
+    `
+    : "";
+
+  const packingList = Array.isArray(event.packingList) ? event.packingList : [];
+  const packingSection = packingList.length
+    ? `
+      <section class="card event-packing">
+        <h2 class="section-title">Что взять с собой</h2>
+        <ul class="list list--bulleted">
+          ${packingList.map((item) => `<li>${item}</li>`).join("")}
+        </ul>
+      </section>
+    `
+    : "";
+
+  const hostsSection = hostProfiles.length
+    ? `
+      <section class="card event-hosts">
+        <div class="section-header">
+          <h2 class="section-title">Ведущие</h2>
+          <span class="section-subtitle">Проводники практик и заботы</span>
+        </div>
+        <div class="event-hosts-grid">
+          ${hostProfiles.map((profile) => `
+            <div class="host-card">
+              <div>
+                <div class="host-card__name">${profile.name}</div>
+                ${profile.description ? `<div class="host-card__text">${profile.description}</div>` : ""}
+              </div>
+              ${profile.link
+                ? `<button class="btn btn--ghost btn--small" data-nav="${profile.link}">Профиль</button>`
+                : `<span class="host-card__link">Профиль</span>`
+              }
+            </div>
+          `).join("")}
+        </div>
+      </section>
+    `
+    : (hosts
+      ? `
+        <section class="card event-hosts">
+          <h2 class="section-title">${hostsLabel}</h2>
+          <div class="card__text">${hostsMarkup}</div>
+        </section>
+      `
+      : ""
+    );
+
+  const includedItems = Array.isArray(event.included) ? event.included : [];
+  const excludedItems = Array.isArray(event.excluded) ? event.excluded : [];
+  const includedSection = (includedItems.length || excludedItems.length)
+    ? `
+      <section class="event-includes section-grid">
+        ${includedItems.length ? `
+          <div class="card">
+            <h3 class="card__title">Включено</h3>
+            <ul class="list list--bulleted">
+              ${includedItems.map((item) => `<li>${item}</li>`).join("")}
+            </ul>
+          </div>
+        ` : ""}
+        ${excludedItems.length ? `
+          <div class="card">
+            <h3 class="card__title">Не включено</h3>
+            <ul class="list list--bulleted">
+              ${excludedItems.map((item) => `<li>${item}</li>`).join("")}
+            </ul>
+          </div>
+        ` : ""}
+      </section>
+    `
+    : "";
+
+  const sections = (event.sections || [])
+    .map((section) => {
+      const itemsList = (section.items || []).map((item) => `<li>${item}</li>`).join("");
+      return `
+        <section class="card event-detail-section">
+          <h2 class="section-title">${section.title}</h2>
+          ${section.text ? `<p class="card__text">${section.text}</p>` : ""}
+          ${itemsList ? `<ul class="list list--bulleted">${itemsList}</ul>` : ""}
+        </section>
+      `;
+    })
+    .join("");
+
+  const galleryMarkup = galleryItems.length ? renderCarousel(galleryItems, event.title) : "";
+  const galleryLink = event.galleryLink || (galleryAlbumId ? `#/gallery?album=${galleryAlbumId}` : "#/gallery");
+  const gallerySection = galleryMarkup
+    ? `
+      <section class="card event-gallery">
+        <div class="section-header">
+          <h2 class="section-title">Галерея</h2>
+          ${galleryLink ? `<button class="btn btn--text btn--small" data-nav="${galleryLink}">Смотреть все</button>` : ""}
+        </div>
+        ${galleryMarkup}
+      </section>
+    `
+    : "";
+
+  const locationLabel = event.location || "";
+  const locationNote = event.locationNote || (locationLabel ? `${locationLabel} — точные координаты и маршрут отправим после заявки.` : "");
+  const mapUrl = event.mapUrl || state.data.app?.contacts?.mapUrl || "";
+  const locationSection = (locationLabel || locationNote)
+    ? `
+      <section class="card event-location">
+        <div class="section-header">
+          <h2 class="section-title">Локация</h2>
+          ${locationLabel ? `<span class="section-subtitle">${locationLabel}</span>` : ""}
+        </div>
+        <div class="map-preview">
+          <div class="map-preview__pin">${renderIcon("pin")}</div>
+          <div class="map-preview__label">${locationLabel || "Алтай"}</div>
+        </div>
+        ${locationNote ? `<p class="card__text">${locationNote}</p>` : ""}
+        ${mapUrl ? `<div class="event-location__actions"><a class="btn btn--ghost" href="${mapUrl}" target="_blank" rel="noopener">Открыть карту</a></div>` : ""}
+      </section>
+    `
+    : "";
+
+  const faqItems = Array.isArray(event.faq) ? event.faq : [];
+  const faqSection = faqItems.length
+    ? `
+      <section class="card event-faq">
+        <h2 class="section-title">FAQ</h2>
+        <div class="event-accordion">
+          ${faqItems.map((item) => `
+            <details class="accordion-item">
+              <summary>
+                <span class="event-accordion__label">
+                  <span>${item.question}</span>
+                </span>
+                <span class="event-accordion__chevron">${renderIcon("chevron")}</span>
+              </summary>
+              <div class="accordion-content">${item.answer}</div>
+            </details>
+          `).join("")}
+        </div>
+      </section>
+    `
+    : "";
+
+  const requestRoute = buildRequestRoute("dates", { comment: `Ретрит: ${event.title}` });
+  const questionRoute = buildRequestRoute("dates", { comment: `Вопрос о ретрите: ${event.title}` });
+  const telegramLink = state.data.app?.contacts?.telegram || "";
+  const questionCta = telegramLink
+    ? `<a class="btn btn--secondary" href="${telegramLink}" target="_blank" rel="noopener">Задать вопрос</a>`
+    : `<button class="btn btn--secondary" data-nav="${questionRoute}">Задать вопрос</button>`;
+  const ctaBar = `
+    <div class="event-cta-bar">
+      <div class="event-cta-bar__actions">
+        <button class="btn btn--primary" data-nav="${requestRoute}">Оставить заявку</button>
+        ${questionCta}
+      </div>
+    </div>
+  `;
+
+  const content = `
+    <div class="event-detail" data-event-detail data-event-id="${event.id}">
+      ${hero}
+      <section class="card event-quick-info">
+        <div class="event-quick-grid">
+          ${quickInfoItems}
+        </div>
+        ${infoNote ? `<div class="event-quick-note">${infoNote}</div>` : ""}
+      </section>
+      ${introSection}
+      ${silenceSection}
+      ${dailyRoutineSection}
+      ${packingSection}
+      ${programSection}
+      ${scheduleSection}
+      ${hostsSection}
+      ${includedSection}
+      ${sections}
+      ${gallerySection}
+      ${locationSection}
+      ${faqSection}
+      ${ctaBar}
+    </div>
+  `;
+
+  return {
+    ...renderShell({ content, activeTab: "events" }),
+    bind: bindEventDetail
+  };
+}
+
+function renderEventSkeletons(count = 3) {
+  return Array.from({ length: count }, (_, index) => `
+    <article class="event-card event-card--skeleton${index === 0 ? " event-card--featured" : ""}">
+      <div class="card event-card__content">
+        <div class="event-card__cover skeleton"></div>
+        <div class="event-card__body">
+          <div class="event-card__chips">
+            <span class="skeleton skeleton-pill"></span>
+            <span class="skeleton skeleton-pill skeleton-pill--short"></span>
+          </div>
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-meta"></div>
+          <div class="skeleton skeleton-line"></div>
+          <div class="event-card__footer">
+            <div class="skeleton skeleton-button"></div>
+          </div>
+        </div>
+      </div>
+    </article>
+  `).join("");
+}
+
+function renderEventModal(event, showYear) {
+  const dateLabel = formatEventDateRange(event.startDate, event.endDate, showYear);
+  const location = event.location ? ` • ${event.location}` : "";
+  const details = dateLabel ? `${dateLabel}${location}` : "";
+
+  return `
+    <div class="modal">
+      <div class="modal__card">
+        <h2 class="section-title">Скоро</h2>
+        <div class="card__text">${event.title}${details ? ` · ${details}` : ""}</div>
+        <div class="card__text">Подробности появятся скоро.</div>
+        <button class="btn btn--primary" data-nav="#/events">Ок</button>
+      </div>
+    </div>
+  `;
+}
+
+function getEventSortValue(event) {
+  if (!event?.startDate) return Number.POSITIVE_INFINITY;
+  const parsed = parseDate(event.startDate);
+  const time = parsed.getTime();
+  return Number.isNaN(time) ? Number.POSITIVE_INFINITY : time;
+}
+
+function formatEventDateRange(startDate, endDate, showYear) {
+  if (!startDate) return "";
+  const start = parseDate(startDate);
+  if (Number.isNaN(start.getTime())) return "";
+  if (!endDate) {
+    return showYear ? EVENT_DATE_WITH_YEAR_FORMATTER.format(start) : EVENT_DATE_FORMATTER.format(start);
+  }
+  const end = parseDate(endDate);
+  if (Number.isNaN(end.getTime())) {
+    return showYear ? EVENT_DATE_WITH_YEAR_FORMATTER.format(start) : EVENT_DATE_FORMATTER.format(start);
+  }
+
+  const startParts = getEventDateParts(start);
+  const endParts = getEventDateParts(end);
+  const sameMonth = start.getFullYear() === end.getFullYear() && start.getMonth() === end.getMonth();
+
+  if (sameMonth) {
+    const yearSuffix = showYear ? ` ${start.getFullYear()}` : "";
+    return `${startParts.day}–${endParts.day} ${startParts.month}${yearSuffix}`;
+  }
+
+  const startLabel = `${startParts.day} ${startParts.month}${showYear ? ` ${start.getFullYear()}` : ""}`;
+  const endLabel = `${endParts.day} ${endParts.month}${showYear ? ` ${end.getFullYear()}` : ""}`;
+  return `${startLabel} — ${endLabel}`;
+}
+
+function getEventTheme(event) {
+  const title = `${event?.title || ""}`.toLowerCase();
+  const id = `${event?.id || ""}`.toLowerCase();
+
+  if (title.includes("випассана") || id.includes("vipassana")) {
+    return "vipassana";
+  }
+  if (title.includes("экстатик") || title.includes("танц") || id.includes("ecstatic") || id.includes("dance")) {
+    return "ecstatic";
+  }
+  if (event?.type === "retreat") {
+    return "retreat";
+  }
+  return "event";
+}
+
+function getEventStatusLabel(event) {
+  if (event?.status) return event.status;
+  if (typeof event?.spotsLeft === "number") {
+    return `Осталось ${event.spotsLeft} мест`;
+  }
+  const days = getEventDaysUntil(event?.startDate);
+  if (days === null) return "";
+  if (days <= 14) return "Скоро";
+  return "Набор открыт";
+}
+
+function getEventDurationLabel(event) {
+  if (event?.duration) return event.duration;
+  if (event?.startDate && event?.endDate) {
+    const start = parseDate(event.startDate);
+    const end = parseDate(event.endDate);
+    if (!Number.isNaN(start.getTime()) && !Number.isNaN(end.getTime())) {
+      const days = Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1;
+      if (days > 0) {
+        return `${days} ${pluralizeDays(days)}`;
+      }
+    }
+  }
+  if (event?.type === "event") {
+    return "1 день";
+  }
+  return "3–7 дней";
+}
+
+function getEventCountdownLabel(event, options = {}) {
+  const days = getEventDaysUntil(event?.startDate);
+  if (days === null || days < 0) return "";
+  if (days === 0) return "Начинается сегодня";
+  if (days === 1) return "Начинается завтра";
+  if (days <= 14) {
+    return `Начинается через ${days} ${pluralizeDays(days)}`;
+  }
+  const startLabel = formatEventDateRange(event.startDate, null, options.showYear);
+  return startLabel ? `С ${startLabel}` : "";
+}
+
+function renderEventMetaLine(dateLabel, location) {
+  const parts = [];
+  if (dateLabel) {
+    parts.push(`
+      <span class="event-card__meta-item">
+        ${renderIcon("calendar")}
+        <span>${dateLabel}</span>
+      </span>
+    `);
+  }
+  if (location) {
+    parts.push(`
+      <span class="event-card__meta-item">
+        ${renderIcon("pin")}
+        <span>${location}</span>
+      </span>
+    `);
+  }
+  if (!parts.length) return "";
+  return `<div class="event-card__meta-line">${parts.join("")}</div>`;
+}
+
+function getEventDaysUntil(startDate) {
+  if (!startDate) return null;
+  const start = parseDate(startDate);
+  if (Number.isNaN(start.getTime())) return null;
+  const today = new Date();
+  const startMidnight = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  return Math.round((startMidnight - todayMidnight) / (1000 * 60 * 60 * 24));
+}
+
+function pluralizeDays(value) {
+  const mod10 = value % 10;
+  const mod100 = value % 100;
+  if (mod10 === 1 && mod100 !== 11) return "день";
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return "дня";
+  return "дней";
+}
+
+function loadSavedEvents() {
+  try {
+    const raw = window.localStorage.getItem(SAVED_EVENTS_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return new Set(Array.isArray(parsed) ? parsed : []);
+  } catch (error) {
+    return new Set();
+  }
+}
+
+function saveSavedEvents(saved) {
+  try {
+    window.localStorage.setItem(SAVED_EVENTS_KEY, JSON.stringify([...saved]));
+  } catch (error) {
+    // Ignore storage errors.
+  }
+}
+
+function updateEventSaveButton(button, isSaved) {
+  if (!button) return;
+  const label = button.querySelector("[data-event-save-label]");
+  const text = isSaved ? "Сохранено" : "Сохранить";
+  if (label) {
+    label.textContent = text;
+  } else {
+    button.textContent = text;
+  }
+  button.setAttribute("aria-pressed", String(isSaved));
+}
+
+function bindEventCards() {
+  const savedEvents = loadSavedEvents();
+
+  document.querySelectorAll("[data-event-card]").forEach((card) => {
+    const eventId = card.getAttribute("data-event-id");
+    const saveButton = card.querySelector("[data-event-save]");
+    const isSaved = Boolean(eventId && savedEvents.has(eventId));
+
+    if (isSaved) {
+      card.classList.add("event-card--saved");
+    }
+    updateEventSaveButton(saveButton, isSaved);
+
+    if (saveButton) {
+      saveButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!eventId) return;
+
+        const nextSaved = !card.classList.contains("event-card--saved");
+        card.classList.toggle("event-card--saved", nextSaved);
+        updateEventSaveButton(saveButton, nextSaved);
+
+        if (nextSaved) {
+          savedEvents.add(eventId);
+        } else {
+          savedEvents.delete(eventId);
+        }
+        saveSavedEvents(savedEvents);
+        card.classList.remove("event-card--swiped");
+      });
+    }
+
+    let startX = null;
+    let startY = null;
+    let isSwiping = false;
+
+    card.addEventListener("pointerdown", (event) => {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      if (event.target.closest(".event-card__action")) return;
+      startX = event.clientX;
+      startY = event.clientY;
+      isSwiping = false;
+    });
+
+    card.addEventListener("pointermove", (event) => {
+      if (startX === null) return;
+      const deltaX = event.clientX - startX;
+      const deltaY = event.clientY - startY;
+      if (!isSwiping) {
+        if (Math.abs(deltaX) < 12 || Math.abs(deltaX) < Math.abs(deltaY)) {
+          return;
+        }
+        isSwiping = true;
+      }
+
+      if (deltaX < -30) {
+        card.classList.add("event-card--swiped");
+      } else if (deltaX > 30) {
+        card.classList.remove("event-card--swiped");
+      }
+    });
+
+    const resetSwipe = () => {
+      startX = null;
+      startY = null;
+      isSwiping = false;
+    };
+
+    card.addEventListener("pointerup", resetSwipe);
+    card.addEventListener("pointercancel", resetSwipe);
+  });
+}
+
+function bindEventDetail() {
+  bindCarousels();
+  const detail = document.querySelector("[data-event-detail]");
+  if (!detail) return;
+
+  const eventId = detail.getAttribute("data-event-id");
+  const saveButton = detail.querySelector("[data-event-save]");
+  if (!eventId || !saveButton) return;
+
+  const savedEvents = loadSavedEvents();
+  const isSaved = savedEvents.has(eventId);
+  detail.classList.toggle("event-detail--saved", isSaved);
+  updateEventSaveButton(saveButton, isSaved);
+
+  saveButton.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const nextSaved = !detail.classList.contains("event-detail--saved");
+    detail.classList.toggle("event-detail--saved", nextSaved);
+    updateEventSaveButton(saveButton, nextSaved);
+
+    if (nextSaved) {
+      savedEvents.add(eventId);
+    } else {
+      savedEvents.delete(eventId);
+    }
+    saveSavedEvents(savedEvents);
+  });
+}
+
+function getEventDateParts(date) {
+  const parts = EVENT_DATE_FORMATTER.formatToParts(date);
+  return {
+    day: parts.find((part) => part.type === "day")?.value || "",
+    month: parts.find((part) => part.type === "month")?.value || ""
+  };
+}
+
 function renderContact() {
   const { app } = state.data;
   const contacts = app.contacts || {};
@@ -1945,7 +2872,55 @@ function bindNavigation() {
   });
 }
 
+function bindSidebarToggle() {
+  const toggle = document.querySelector("[data-sidebar-toggle]");
+  if (!toggle) return;
+  const label = toggle.querySelector(".sidebar-toggle__label");
+
+  const update = () => {
+    const collapsed = state.ui.sidebarCollapsed;
+    applySidebarState();
+    const title = collapsed ? "Развернуть меню" : "Свернуть меню";
+    toggle.setAttribute("aria-expanded", String(!collapsed));
+    toggle.setAttribute("aria-label", title);
+    toggle.setAttribute("title", title);
+    if (label) {
+      label.textContent = collapsed ? "Развернуть" : "Свернуть";
+    }
+  };
+
+  update();
+
+  toggle.addEventListener("click", (event) => {
+    event.preventDefault();
+    state.ui.sidebarCollapsed = !state.ui.sidebarCollapsed;
+    saveSidebarState();
+    update();
+  });
+}
+
 function bindShareButtons() {
+  const share = (button, { title, text, url }) => {
+    const card = button.closest(".event-card");
+    if (card) {
+      card.classList.remove("event-card--swiped");
+    }
+    if (navigator.share) {
+      navigator.share({ title, text, url }).catch(() => {});
+      return;
+    }
+
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(url).then(() => {
+        button.classList.add("is-copied");
+        setTimeout(() => button.classList.remove("is-copied"), 1400);
+      });
+      return;
+    }
+
+    window.prompt("Скопируйте ссылку", url);
+  };
+
   document.querySelectorAll("[data-share-master]").forEach((button) => {
     button.addEventListener("click", (event) => {
       event.preventDefault();
@@ -1958,20 +2933,23 @@ function bindShareButtons() {
         ? `${window.location.origin}${window.location.pathname}#/master/${masterId}`
         : window.location.href;
 
-      if (navigator.share) {
-        navigator.share({ title, text, url }).catch(() => {});
-        return;
-      }
+      share(button, { title, text, url });
+    });
+  });
 
-      if (navigator.clipboard?.writeText) {
-        navigator.clipboard.writeText(url).then(() => {
-          button.classList.add("is-copied");
-          setTimeout(() => button.classList.remove("is-copied"), 1400);
-        });
-        return;
-      }
+  document.querySelectorAll("[data-share-event]").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
 
-      window.prompt("Скопируйте ссылку", url);
+      const eventId = button.getAttribute("data-share-event");
+      const title = button.getAttribute("data-share-title") || "Событие";
+      const text = button.getAttribute("data-share-text") || title;
+      const url = eventId
+        ? `${window.location.origin}${window.location.pathname}#/events?event=${eventId}`
+        : window.location.href;
+
+      share(button, { title, text, url });
     });
   });
 }

@@ -45,6 +45,12 @@
       "label": "Как добраться / Контакты",
       "route": "/contact",
       "icon": "pin"
+    },
+    {
+      "id": "dark-retreat",
+      "label": "Темный ретрит",
+      "route": "/event/dark-retreat-ko-phangan",
+      "icon": "moon"
     }
   ],
   "galleryPreview": {

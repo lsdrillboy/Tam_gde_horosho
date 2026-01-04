@@ -11,6 +11,7 @@ const contentFiles = {
   services: "services.json",
   masters: "masters.json",
   practices: "practices.json",
+  events: "events.json",
   kitchen: "kitchen.json",
   gallery: "gallery.json",
   shop: "shop.json",
@@ -31,6 +32,7 @@ function loadContent() {
     services: readJson("services.json"),
     masters: readJson("masters.json"),
     practices: readJson("practices.json"),
+    events: readJson("events.json"),
     kitchen: readJson("kitchen.json"),
     shop: readJson("shop.json"),
     forms: readJson("forms.json")
