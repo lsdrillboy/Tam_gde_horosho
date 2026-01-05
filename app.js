@@ -146,7 +146,13 @@ function renderIcon(name, className = "") {
 function normalizeMediaItem(item) {
   if (!item) return { type: "image", src: "" };
   if (typeof item === "string") return { type: "image", src: item };
-  if (item.src) return { type: item.type || "image", src: item.src };
+  if (item.src) {
+    return {
+      type: item.type || "image",
+      src: item.src,
+      objectPosition: item.objectPosition || item.position || ""
+    };
+  }
   return { type: "image", src: String(item) };
 }
 
@@ -184,6 +190,7 @@ function renderCarousel(items = [], label = "") {
   const track = slides
     .map((item, index) => {
       const media = normalizeMediaItem(item);
+      const positionStyle = media.objectPosition ? ` style="object-position: ${media.objectPosition};"` : "";
       if (!media.src) {
         return `
           <div class="carousel__slide carousel__slide--placeholder">
@@ -194,13 +201,13 @@ function renderCarousel(items = [], label = "") {
       if (media.type === "video") {
         return `
           <div class="carousel__slide">
-            <video src="${media.src}" controls preload="metadata" playsinline></video>
+            <video src="${media.src}" controls preload="metadata" playsinline${positionStyle}></video>
           </div>
         `;
       }
       return `
         <div class="carousel__slide">
-          <img src="${media.src}" alt="${label} ${index + 1}" loading="lazy" />
+          <img src="${media.src}" alt="${label} ${index + 1}" loading="lazy"${positionStyle} />
         </div>
       `;
     })
@@ -314,7 +321,7 @@ function renderRoute(path, query) {
     return renderRoomDetail(parts[1]);
   }
   if (parts[0] === "service") {
-    return renderServiceDetail(parts[1]);
+    return renderServiceDetail(parts[1], query);
   }
   if (parts[0] === "master") {
     return renderMasterDetail(parts[1], query);
@@ -530,8 +537,10 @@ function renderHome() {
         </div>
         <button class="btn btn--ghost btn--small" data-nav=\"#${home.galleryPreview.route}\">Смотреть все</button>
       </div>
-      <div class="media-grid">
-        ${previewMarkup}
+      <div class="card card--strong">
+        <div class="media-grid">
+          ${previewMarkup}
+        </div>
       </div>
     </section>
     <section class="cta-panel">
@@ -552,11 +561,19 @@ function renderHome() {
 function renderAccommodation() {
   const { accommodation, kitchen, gallery } = state.data;
   const roomFund = accommodation.roomFund;
+  const noteParts = roomFund.note
+    ? roomFund.note.split("—").map((part) => part.trim()).filter(Boolean)
+    : [];
+  const noteValue = noteParts[0] || roomFund.note || "";
+  const noteLabel = noteParts[1] || "";
 
   const stats = [
     { id: "rooms", label: "Номеров", value: roomFund.units, icon: "bed" },
     { id: "avg", label: "Средняя вместимость", value: `${roomFund.averageCapacity} мест`, icon: "people" },
-    { id: "max", label: "Макс. вместимость", value: `${roomFund.maxCapacity} человек`, icon: "people" }
+    { id: "max", label: "Макс. вместимость", value: `${roomFund.maxCapacity} человек`, icon: "people" },
+    ...(noteValue
+      ? [{ id: "fund", label: noteLabel, value: noteValue, icon: "check" }]
+      : [])
   ]
     .map(
       (item) => `
@@ -679,7 +696,6 @@ function renderAccommodation() {
       <div class="stats-grid">
         ${stats}
       </div>
-      <div class="note">${roomFund.note}</div>
     </section>
     <section class="section">
       <h2 class="section-title">Типы размещения</h2>
@@ -737,6 +753,11 @@ function renderRoomDetail(roomId) {
   }
 
   const carousel = renderCarousel(room.photos, room.title);
+  const heroGallery = `
+    <div class="card card--strong hero-gallery">
+      ${carousel}
+    </div>
+  `;
   const features = (room.features || []).map((item) => `<li>${item}</li>`).join("");
   const included = (accommodation.included || []).map((item) => `<li>${item}</li>`).join("");
   const conditions = (accommodation.conditions || []).map((item) => `<li>${item}</li>`).join("");
@@ -746,9 +767,7 @@ function renderRoomDetail(roomId) {
     <section class="page-hero">
       <h1 class="page-title">${room.title}</h1>
       <div class="page-subtitle">${room.subtitle}</div>
-    </section>
-    <section class="card card--strong">
-      ${carousel}
+      ${heroGallery}
     </section>
     <section class="card card--contacts">
       <h2 class="section-title">Описание</h2>
@@ -874,17 +893,32 @@ function renderServices() {
     </div>
   `;
 
-  return renderShell({ content, activeTab: "services" });
+  return {
+    ...renderShell({ content, activeTab: "services" }),
+    bind: bindCarousels
+  };
 }
 
-function renderServiceDetail(serviceId) {
-  const { services } = state.data;
+function renderServiceDetail(serviceId, query = new URLSearchParams()) {
+  const { services, masters } = state.data;
   const service = services.extras.items.find((item) => item.id === serviceId);
   if (!service) {
     return renderNotFound();
   }
+  if (service.detail?.layout === "bath") {
+    return renderBathDetail(service, query);
+  }
 
-  const carousel = renderCarousel(service.photos, service.title);
+  const detail = service.detail || {};
+  const galleryItems = Array.isArray(service.photos) ? service.photos : [];
+  const galleryMarkup = galleryItems.length ? renderCarousel(galleryItems, service.title) : "";
+  const heroGallery = galleryMarkup
+    ? `
+      <div class="card card--strong hero-gallery">
+        ${galleryMarkup}
+      </div>
+    `
+    : "";
   const includes = (service.includes || []).map((item) => `<li>${item}</li>`).join("");
   const params = (service.params || [])
     .map((param) => `<span class="pill">${param.label}: ${param.value}</span>`)
@@ -899,29 +933,48 @@ function renderServiceDetail(serviceId) {
       `
     )
     .join("");
-  const detailIntro = service.detail?.intro
+  const detailIntro = detail.intro
     ? `
       <section class="card">
-        <h2 class="section-title">${service.detail.intro.title}</h2>
-        <div class="section-subtitle">${service.detail.intro.subtitle}</div>
+        <h2 class="section-title">${detail.intro.title}</h2>
+        <div class="section-subtitle">${detail.intro.subtitle}</div>
       </section>
     `
     : "";
-  const programCards = (service.detail?.programs || [])
+  const suppressProgramIntro = detail.programsTitle === "Описание практики" && service.description;
+  const programCards = (detail.programs || [])
     .map((program) => {
-      const paragraphs = (program.paragraphs || [])
-        .map((text) => `<p class="card__text">${text}</p>`)
-        .join("");
+      const paragraphs = suppressProgramIntro
+        ? ""
+        : (program.paragraphs || [])
+          .map((text) => `<p class="card__text">${text}</p>`)
+          .join("");
       const about = program.about
-        ? `
-          <div class="massage-card__section">
-            <h3 class="massage-card__subtitle">${program.about.title}</h3>
-            ${program.about.intro ? `<div class="card__text">${program.about.intro}</div>` : ""}
-            <ul class="list list--bulleted">
-              ${(program.about.items || []).map((item) => `<li>${item}</li>`).join("")}
-            </ul>
-          </div>
-        `
+        ? (program.about.title === "Важно знать"
+          ? `
+            <details class="practice-card__more accordion-item">
+              <summary>
+                <span class="massage-card__subtitle">${program.about.title}</span>
+                <span class="practice-card__more-label">Подробнее</span>
+              </summary>
+              <div class="accordion-content">
+                ${program.about.intro ? `<div class="card__text">${program.about.intro}</div>` : ""}
+                <ul class="list list--bulleted">
+                  ${(program.about.items || []).map((item) => `<li>${item}</li>`).join("")}
+                </ul>
+              </div>
+            </details>
+          `
+          : `
+            <div class="massage-card__section">
+              <h3 class="massage-card__subtitle">${program.about.title}</h3>
+              ${program.about.intro ? `<div class="card__text">${program.about.intro}</div>` : ""}
+              <ul class="list list--bulleted">
+                ${(program.about.items || []).map((item) => `<li>${item}</li>`).join("")}
+              </ul>
+            </div>
+          `
+        )
         : "";
       const ideal = program.ideal
         ? `
@@ -1019,7 +1072,7 @@ function renderServiceDetail(serviceId) {
       `;
     })
     .join("");
-  const programsTitle = service.detail?.programsTitle || "Программы массажа";
+  const programsTitle = detail.programsTitle || "Программы массажа";
   const programsSection = programCards
     ? `
       <section class="section">
@@ -1031,21 +1084,57 @@ function renderServiceDetail(serviceId) {
     `
     : "";
 
+  const relatedMasters = masters.items.filter((master) =>
+    master.practices?.some((practice) => practice.serviceId === serviceId)
+  );
+  const mastersSection = relatedMasters.length
+    ? `
+      <section class="section">
+        <h2 class="section-title">Мастера</h2>
+        <div class="master-list">
+          ${relatedMasters
+            .map((master) => {
+              const avatarPosition = master.avatarPosition ? ` style="object-position: ${master.avatarPosition};"` : "";
+              const avatar = master.photos?.[0]
+                ? `<img src="${master.photos[0]}" alt="${master.name}"${avatarPosition} />`
+                : `<span class="avatar__placeholder">${master.name.charAt(0)}</span>`;
+              const tags = (master.tags || []).map((tag) => `<span class="master-chip">${tag}</span>`).join("");
+              return `
+                <article class="master-card" data-nav="#/master/${master.id}">
+                  <div class="avatar">${avatar}</div>
+                  <div class="master-card__content">
+                    <div class="master-card__header">
+                      <div class="master-card__identity">
+                        <h3 class="master-card__name">${master.name}</h3>
+                        <div class="master-card__role">${master.role}</div>
+                      </div>
+                    </div>
+                    <div class="master-card__chips">${tags}</div>
+                    <div class="master-card__anchor">${master.bioShort || master.anchor}</div>
+                  </div>
+                </article>
+              `;
+            })
+            .join("")}
+        </div>
+      </section>
+    `
+    : "";
+
   const content = `
     <section class="page-hero">
       <h1 class="page-title">${service.title}</h1>
       <div class="page-subtitle">${service.short}</div>
+      ${heroGallery}
     </section>
     ${detailIntro}
-    <section class="card card--strong">
-      ${carousel}
-    </section>
     <section class="card">
       <h2 class="section-title">Описание</h2>
       <p class="card__text">${service.description}</p>
       <div class="pill-row">${params}</div>
     </section>
     ${programsSection}
+    ${mastersSection}
     <section class="card">
       <h2 class="section-title">Что входит</h2>
       <ul class="list">${includes}</ul>
@@ -1066,6 +1155,249 @@ function renderServiceDetail(serviceId) {
   return {
     ...renderShell({ content, activeTab: "services" }),
     bind: bindCarousels
+  };
+}
+
+function renderBathDetail(service, query = new URLSearchParams()) {
+  const { masters } = state.data;
+  const detail = service.detail || {};
+  const heroSubtitle = detail.heroSubtitle || service.short || "";
+  const chips = (detail.chips || [])
+    .map((chip) => `<span class="pill">${chip}</span>`)
+    .join("");
+  const requestRoute = buildRequestRoute("service", { serviceId: service.id });
+  const programsRoute = `#/service/${service.id}?focus=programs`;
+  const quickFacts = (detail.quickFacts || [])
+    .map(
+      (item) => `
+        <div class="event-quick-item">
+          ${renderIcon(item.icon)}
+          <div>
+            <div class="event-quick-label">${item.label}</div>
+            <div class="event-quick-value">${item.value}</div>
+          </div>
+        </div>
+      `
+    )
+    .join("");
+  const quickFactsSection = quickFacts
+    ? `
+      <section class="card event-quick-info">
+        <div class="event-quick-grid">
+          ${quickFacts}
+        </div>
+      </section>
+    `
+    : "";
+  const aboutSection = service.description
+    ? `
+      <section class="card">
+        <h2 class="section-title">${detail.aboutTitle || "О практике"}</h2>
+        <p class="card__text">${service.description}</p>
+      </section>
+    `
+    : "";
+  const programs = (detail.programs || [])
+    .map((program) => {
+      const priceLabel = program.price || "по запросу";
+      const meta = priceLabel ? `<span class="badge">${priceLabel}</span>` : "";
+      const note = program.note ? `<div class="practice-card__note">${program.note}</div>` : "";
+      const summary = program.summary ? `<div class="practice-card__text">${program.summary}</div>` : "";
+      const ctaLabel = program.ctaLabel || "Выбрать";
+      const programRoute = buildRequestRoute("service", {
+        serviceId: service.id,
+        comment: `Программа: ${program.title}`
+      });
+      return `
+        <article class="practice-card">
+          <h3 class="practice-card__title">${program.title}</h3>
+          ${summary}
+          ${note}
+          ${meta ? `<div class="practice-card__meta">${meta}</div>` : ""}
+          <div class="practice-card__actions">
+            <button class="btn btn--primary btn--small" data-nav="${programRoute}">${ctaLabel}</button>
+          </div>
+        </article>
+      `;
+    })
+    .join("");
+  const programsSection = programs
+    ? `
+      <section class="section" id="service-programs">
+        <h2 class="section-title">${detail.programsTitle || "Программы парения"}</h2>
+        <div class="master-practices">
+          ${programs}
+        </div>
+      </section>
+    `
+    : "";
+  const steps = (detail.steps || [])
+    .map(
+      (step) => `
+        <li class="event-icon-item">
+          ${renderIcon(step.icon)}
+          <div>
+            <strong>${step.title}</strong>
+            ${step.text ? `<div class="card__text">${step.text}</div>` : ""}
+          </div>
+        </li>
+      `
+    )
+    .join("");
+  const stepsSection = steps
+    ? `
+      <section class="card">
+        <h2 class="section-title">${detail.stepsTitle || "Как проходит парение"}</h2>
+        <ul class="event-icon-list">
+          ${steps}
+        </ul>
+      </section>
+    `
+    : "";
+  const effects = (detail.effects || []).map((item) => `<li>${item}</li>`).join("");
+  const effectsSection = effects
+    ? `
+      <section class="card">
+        <h2 class="section-title">${detail.effectsTitle || "Эффект"}</h2>
+        <ul class="list list--bulleted">
+          ${effects}
+        </ul>
+      </section>
+    `
+    : "";
+
+  const master = detail.masterId
+    ? masters.items.find((item) => item.id === detail.masterId)
+    : null;
+  const masterTags = master?.tags?.length
+    ? master.tags.map((tag) => `<span class="master-chip">${tag}</span>`).join("")
+    : "";
+  const masterAvatar = master?.photos?.[0]
+    ? `<img src="${master.photos[0]}" alt="${master.name}" />`
+    : `<span class="avatar__placeholder">${(master?.name || "М").charAt(0)}</span>`;
+  const masterProfileRoute = master ? `#/master/${master.id}` : "#/contact";
+  const masterQuestionRoute = master
+    ? buildRequestRoute("master", { masterId: master.id, comment: "Вопрос о парении" })
+    : buildRequestRoute("service", { serviceId: service.id, comment: "Вопрос о парении" });
+  const masterSection = master
+    ? `
+      <section class="section">
+        <h2 class="section-title">${detail.masterTitle || `Мастер парения ${master.name}`}</h2>
+        <div class="master-list">
+          <article class="master-card" data-nav="${masterProfileRoute}">
+            <div class="avatar">${masterAvatar}</div>
+            <div class="master-card__content">
+              <div class="master-card__header">
+                <div class="master-card__identity">
+                  <h3 class="master-card__name">${master.name}</h3>
+                  <div class="master-card__role">${master.role || "Мастер парения"}</div>
+                </div>
+              </div>
+              ${masterTags ? `<div class="master-card__chips">${masterTags}</div>` : ""}
+              ${master.bioShort ? `<div class="master-card__anchor">${master.bioShort}</div>` : ""}
+              ${master.anchor ? `<div class="card__text">${master.anchor}</div>` : ""}
+              <div class="master-card__actions">
+                <button class="btn btn--primary btn--small" data-nav="${masterProfileRoute}">Профиль</button>
+                <button class="btn btn--ghost btn--small" data-nav="${masterQuestionRoute}">Задать вопрос</button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+    `
+    : "";
+
+  const providedItems = (detail.provided || []).map((item) => `<li>${item}</li>`).join("");
+  const recommendedItems = (detail.recommended || []).map((item) => `<li>${item}</li>`).join("");
+  const kitSection = providedItems || recommendedItems
+    ? `
+      <section class="section">
+        <div class="section-grid">
+          ${providedItems ? `
+            <section class="card">
+              <h3 class="card__title">${detail.providedTitle || "Мы выдаём"}</h3>
+              <ul class="list list--bulleted">${providedItems}</ul>
+            </section>
+          ` : ""}
+          ${recommendedItems ? `
+            <section class="card">
+              <h3 class="card__title">${detail.recommendedTitle || "Рекомендуем взять"}</h3>
+              <ul class="list list--bulleted">${recommendedItems}</ul>
+            </section>
+          ` : ""}
+        </div>
+      </section>
+    `
+    : "";
+  const contraindications = (detail.contraindications || [])
+    .map((item) => `<li>${item}</li>`)
+    .join("");
+  const contraindicationsSection = contraindications
+    ? `
+      <section class="card">
+        <h2 class="section-title">${detail.contraTitle || "Важно"}</h2>
+        <details class="accordion-item">
+          <summary>${detail.contraSubtitle || "Противопоказания / ограничения"}</summary>
+          <div class="accordion-content">
+            <ul class="list list--bulleted">${contraindications}</ul>
+          </div>
+        </details>
+      </section>
+    `
+    : "";
+
+  const galleryItems = detail.gallery?.length ? detail.gallery : (service.photos || []);
+  const galleryMarkup = galleryItems.length ? renderCarousel(galleryItems, service.title) : "";
+  const heroGallery = galleryMarkup
+    ? `
+      <div class="card card--strong hero-gallery">
+        ${galleryMarkup}
+      </div>
+    `
+    : "";
+
+  const telegramLink = state.data.app?.contacts?.telegram || "";
+  const managerCta = telegramLink
+    ? `<a class="btn btn--secondary" href="${telegramLink}" target="_blank" rel="noopener">Написать менеджеру</a>`
+    : `<button class="btn btn--secondary" data-nav="#/contact">Написать менеджеру</button>`;
+  const ctaBar = `
+    <div class="event-cta-bar">
+      <div class="event-cta-bar__actions">
+        <button class="btn btn--primary" data-nav="${requestRoute}">Записаться</button>
+        ${managerCta}
+      </div>
+      ${detail.ctaNote ? `<div class="event-cta-bar__note">${detail.ctaNote}</div>` : ""}
+    </div>
+  `;
+
+  const content = `
+    <section class="page-hero">
+      <h1 class="page-title">${service.title}</h1>
+      ${heroSubtitle ? `<div class="page-subtitle">${heroSubtitle}</div>` : ""}
+      ${chips ? `<div class="pill-row">${chips}</div>` : ""}
+      <div class="hero__actions">
+        <button class="btn btn--primary" data-nav="${requestRoute}">${detail.heroPrimaryLabel || "Записаться"}</button>
+        <button class="btn btn--ghost" data-nav="${programsRoute}">${detail.heroSecondaryLabel || "Выбрать программу"}</button>
+      </div>
+      ${heroGallery}
+    </section>
+    ${quickFactsSection}
+    ${aboutSection}
+    ${programsSection}
+    ${stepsSection}
+    ${effectsSection}
+    ${masterSection}
+    ${kitSection}
+    ${contraindicationsSection}
+    ${ctaBar}
+  `;
+
+  return {
+    ...renderShell({ content, activeTab: "services" }),
+    bind: () => {
+      bindCarousels();
+      bindServiceDetail(query);
+    }
   };
 }
 
@@ -1570,7 +1902,9 @@ function renderGallery(query = new URLSearchParams()) {
     <section class="card card--strong">
       <div class="tabs">${tabs}</div>
     </section>
-    <section class="gallery-grid">${items}</section>
+    <section class="card card--strong">
+      <div class="gallery-grid">${items}</div>
+    </section>
   `;
 
   return {
@@ -1823,10 +2157,24 @@ function renderEventDetail(eventId) {
     .map(normalizeMediaItem)
     .filter((item) => item.src && item.type !== "video")
     .slice(0, 8);
+  const showHeroGallery = event.heroGallery !== false;
+  const galleryMarkup = showHeroGallery && galleryItems.length
+    ? renderCarousel(galleryItems, event.title)
+    : "";
+  const galleryLink = event.galleryLink || (galleryAlbumId ? `#/gallery?album=${galleryAlbumId}` : "#/gallery");
+  const heroGallery = galleryMarkup
+    ? `
+      <div class="card card--strong hero-gallery event-hero__gallery">
+        ${galleryMarkup}
+        ${galleryLink ? `<button class="btn btn--text btn--small hero-gallery__link" data-nav="${galleryLink}">Смотреть все</button>` : ""}
+      </div>
+    `
+    : "";
   const cover = event.cover || (galleryItems[0]?.src || "");
   const themeClass = getEventTheme(event);
+  const heroGalleryClass = heroGallery ? " event-hero--with-gallery" : "";
   const hero = `
-    <section class="event-hero event-hero--${themeClass}${cover ? "" : " event-hero--placeholder"}"${cover ? ` style="background-image: url('${cover}')"` : ""}>
+    <section class="event-hero event-hero--${themeClass}${cover ? "" : " event-hero--placeholder"}${heroGalleryClass}"${cover ? ` style="background-image: url('${cover}')"` : ""}>
       <div class="event-hero__actions">
         <button class="event-hero__action" type="button" data-share-event="${event.id}" data-share-title="${event.title}" data-share-text="${event.title}" aria-label="Поделиться">
           ${renderIcon("share")}
@@ -1836,6 +2184,7 @@ function renderEventDetail(eventId) {
       <div class="event-hero__content">
         <h1 class="event-hero__title">${event.title}</h1>
         ${subtitle ? `<div class="event-hero__subtitle">${subtitle}</div>` : ""}
+        ${heroGallery}
       </div>
     </section>
   `;
@@ -2106,20 +2455,6 @@ function renderEventDetail(eventId) {
     })
     .join("");
 
-  const galleryMarkup = galleryItems.length ? renderCarousel(galleryItems, event.title) : "";
-  const galleryLink = event.galleryLink || (galleryAlbumId ? `#/gallery?album=${galleryAlbumId}` : "#/gallery");
-  const gallerySection = galleryMarkup
-    ? `
-      <section class="card event-gallery">
-        <div class="section-header">
-          <h2 class="section-title">Галерея</h2>
-          ${galleryLink ? `<button class="btn btn--text btn--small" data-nav="${galleryLink}">Смотреть все</button>` : ""}
-        </div>
-        ${galleryMarkup}
-      </section>
-    `
-    : "";
-
   const locationLabel = event.location || "";
   const locationNote = event.locationNote || (locationLabel ? `${locationLabel} — точные координаты и маршрут отправим после заявки.` : "");
   const mapUrl = event.mapUrl || state.data.app?.contacts?.mapUrl || "";
@@ -2195,7 +2530,6 @@ function renderEventDetail(eventId) {
       ${hostsSection}
       ${includedSection}
       ${sections}
-      ${gallerySection}
       ${locationSection}
       ${faqSection}
       ${ctaBar}
@@ -2959,6 +3293,19 @@ function bindMasterProfile(query) {
   const focus = query.get("focus");
   if (focus === "practices") {
     const section = document.getElementById("master-practices");
+    if (section) {
+      requestAnimationFrame(() => {
+        section.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+  }
+}
+
+function bindServiceDetail(query) {
+  if (!query) return;
+  const focus = query.get("focus");
+  if (focus === "programs") {
+    const section = document.getElementById("service-programs");
     if (section) {
       requestAnimationFrame(() => {
         section.scrollIntoView({ behavior: "smooth", block: "start" });

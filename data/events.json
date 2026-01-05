@@ -9,6 +9,7 @@
       "startDate": "2026-02-07",
       "endDate": "2026-02-14",
       "cover": "assets/events/dark-retreat.png",
+      "heroGallery": false,
       "description": "7 дней тишины и глубокого восстановления в темноте.",
       "gallery": [
         "assets/events/dark-retreat.png"
@@ -95,6 +96,7 @@
       "startDate": "2026-04-14",
       "endDate": null,
       "cover": "assets/events/yoga-retreat-altai.png",
+      "heroGallery": false,
       "subtitle": "Ретрит силы и мягкости в горах.",
       "cardDescription": "Ретрит силы и мягкости в горах.",
       "description": "Йога ретрит в Алтае — пространство силы и мягкости. Мы замедляемся, возвращаем тело в ощущение опоры, раскрываем дыхание и внимательность. Подходит для тех, кто хочет перезагрузиться, укрепить ресурс и почувствовать ясность.",
@@ -193,6 +195,7 @@
       "startDate": "2026-05-05",
       "endDate": "2026-05-14",
       "cover": "assets/events/vipassana.png",
+      "heroGallery": false,
       "subtitle": "Молчание. Наблюдение. Ясность.",
       "cardDescription": "Период тишины и ясности.",
       "description": [

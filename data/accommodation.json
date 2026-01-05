@@ -26,6 +26,10 @@
       "photos": [
         {
           "type": "image",
+          "src": "assets/gallery/rooms/domiki/1766839330802.jpg"
+        },
+        {
+          "type": "image",
           "src": "assets/gallery/rooms/domiki/1746362598896.jpg"
         },
         {
@@ -47,10 +51,6 @@
         {
           "type": "image",
           "src": "assets/gallery/rooms/domiki/1746363423458.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/domiki/1766839330802.jpg"
         },
         {
           "type": "video",
@@ -126,6 +126,10 @@
       "photos": [
         {
           "type": "image",
+          "src": "assets/gallery/rooms/townhouses/1746363313177.jpg"
+        },
+        {
+          "type": "image",
           "src": "assets/gallery/rooms/townhouses/1746363056793.jpg"
         },
         {
@@ -139,10 +143,6 @@
         {
           "type": "image",
           "src": "assets/gallery/rooms/townhouses/1746363255650.jpg"
-        },
-        {
-          "type": "image",
-          "src": "assets/gallery/rooms/townhouses/1746363313177.jpg"
         },
         {
           "type": "image",

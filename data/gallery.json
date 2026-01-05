@@ -213,6 +213,10 @@
         {
           "type": "video",
           "src": "/api/media?path=%2F%D0%A1%D1%82%D0%BE%D0%BB%D0%BE%D0%B2%D0%B0%D1%8F%2FInShot_20251224_164722816.mp4"
+        },
+        {
+          "type": "video",
+          "src": "assets/gallery/dining/VID_20250727_125429.mp4"
         }
       ]
     },
