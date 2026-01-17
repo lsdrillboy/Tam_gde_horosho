@@ -43,11 +43,11 @@
     {
       "id": "cacao-ceremony",
       "title": "Какао-церемония",
-      "description": "Групповая практика с сопровождением ведущего.",
-      "format": ["group"],
+      "description": "Групповая или индивидуальная практика с сопровождением ведущего.",
+      "format": ["individual", "group"],
       "type": "ritual",
       "location": ["indoor"],
-      "duration": "90–120 мин",
+      "duration": "150 мин",
       "price": {
         "mode": "request"
       }

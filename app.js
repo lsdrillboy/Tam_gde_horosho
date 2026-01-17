@@ -31,6 +31,17 @@ const dataFiles = {
   forms: "data/forms.json"
 };
 
+const BUILD_VERSION = "20260106-4";
+
+function withBuildVersion(url) {
+  if (!BUILD_VERSION || !url) return url;
+  if (/^(https?:)?\/\//i.test(url) || url.startsWith("data:") || url.startsWith("blob:")) {
+    return url;
+  }
+  const separator = url.includes("?") ? "&" : "?";
+  return `${url}${separator}v=${encodeURIComponent(BUILD_VERSION)}`;
+}
+
 const ICONS = {
 
   home: "<path d=\"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8\" /><path d=\"M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\" />",
@@ -82,8 +93,6 @@ const EVENT_TYPE_LABELS = {
   retreat: "Ретрит"
 };
 
-const SAVED_EVENTS_KEY = "saved-events";
-
 const EVENT_DATE_FORMATTER = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long" });
 const EVENT_DATE_WITH_YEAR_FORMATTER = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long", year: "numeric" });
 
@@ -93,7 +102,7 @@ async function init() {
   initTelegram();
   await loadData();
   loadSidebarState();
-  if (window.location.hash !== "#/home") {
+  if (!window.location.hash || window.location.hash === "#") {
     window.location.hash = "#/home";
   }
   if (!state.ui.galleryAlbumId && state.data.gallery?.albums?.length) {
@@ -260,7 +269,9 @@ async function loadData() {
 }
 
 async function fetchJson(path) {
-  const response = await fetch(path, { cache: "no-store" });
+  const separator = path.includes("?") ? "&" : "?";
+  const url = BUILD_VERSION ? `${path}${separator}v=${encodeURIComponent(BUILD_VERSION)}` : path;
+  const response = await fetch(url, { cache: "no-store" });
   if (!response.ok) {
     throw new Error(`Не удалось загрузить ${path}`);
   }
@@ -301,6 +312,8 @@ function render() {
   bindNavigation();
   bindSidebarToggle();
   bindShareButtons();
+  bindAutoplayVideos();
+  bindFloatingControls();
   if (shouldScrollToTop) {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
     state.ui.currentPath = path;
@@ -456,13 +469,25 @@ function getActiveTab(path) {
 
 function renderHome() {
   const { app, home, gallery } = state.data;
-  const heroImage = home.hero.image;
+  const heroImage = home.hero.image || "";
+  const heroVideo = home.hero.video || "";
+  const heroImageUrl = heroImage ? withBuildVersion(heroImage) : "";
+  const heroVideoUrl = heroVideo ? withBuildVersion(heroVideo) : "";
+  const posterAttr = heroImageUrl ? ` poster="${heroImageUrl}"` : "";
   const heroLogo = home.hero.logo
-    ? `<img class="hero__media-logo" src="${home.hero.logo}" alt="Логотип ${home.hero.title}" loading="eager" />`
+    ? `<img class="hero__media-logo" src="${withBuildVersion(home.hero.logo)}" alt="Логотип ${home.hero.title}" loading="eager" />`
     : "";
-  const heroMedia = heroImage
-    ? `<div class="hero__media" style="background-image: url('${heroImage}')">${heroLogo}</div>`
-    : `<div class="hero__media hero__media--placeholder">${heroLogo || "<div class=\"hero__media-text\">Фото локации</div>"}</div>`;
+  const heroMedia = heroVideoUrl
+    ? `
+      <div class="hero__media hero__media--video">
+        <video class="hero__media-video" data-autoplay-video autoplay muted loop playsinline webkit-playsinline preload="metadata"${posterAttr} aria-hidden="true">
+          <source src="${heroVideoUrl}" type="video/mp4" />
+        </video>
+      </div>
+    `
+    : heroImageUrl
+      ? `<div class="hero__media" style="background-image: url('${heroImageUrl}')">${heroLogo}</div>`
+      : `<div class="hero__media hero__media--placeholder">${heroLogo || "<div class=\"hero__media-text\">Фото локации</div>"}</div>`;
 
   const benefits = home.benefits
     .map(
@@ -670,17 +695,30 @@ function renderAccommodation() {
   const cateringCards = accommodation.catering.packages
     .map((pkg) => {
       const rate = getKitchenMinRate(kitchen, pkg.foodType);
-      const priceLine = rate ? `от ${formatCurrency(rate)} / чел. в день` : "Цена по запросу";
+      const priceBadge = rate
+        ? `
+          <div class="price-tag price-tag--soft catering-card__price">
+            <span class="price-tag__value">от ${formatCurrency(rate)}</span>
+            <span class="price-tag__suffix">/ чел. в день</span>
+          </div>
+        `
+        : `
+          <div class="price-tag price-tag--soft catering-card__price catering-card__price--request">
+            Цена по запросу
+          </div>
+        `;
       return `
         <div class="card catering-card">
           <div class="catering-card__header">
-            ${renderIcon("food")}
-            <div>
+            <div class="catering-card__icon">
+              ${renderIcon("food")}
+            </div>
+            <div class="catering-card__body">
               <h3 class="card__title">${pkg.title}</h3>
               <div class="card__text">${pkg.description}</div>
             </div>
+            ${priceBadge}
           </div>
-          <div class="price-tag price-tag--soft">${priceLine}</div>
         </div>
       `;
     })
@@ -720,17 +758,17 @@ function renderAccommodation() {
       ${hallPreview}
       <div class="hall-card__cta">${hall.ctaLabel || "Смотреть фото и описание"}</div>
     </button>
-    <section class="section">
-      <h2 class="section-title">${accommodation.catering.title}</h2>
-      <div class="section-subtitle">${accommodation.catering.description}</div>
-      <div class="section-grid">
-        ${cateringCards}
-      </div>
-      <div class="cta-row">
-        <button class="btn btn--ghost btn--small" data-nav=\"#/kitchen\">Смотреть тарифы</button>
-      </div>
-    </section>
-    <div class="cta-panel">
+	    <section class="section">
+	      <h2 class="section-title">${accommodation.catering.title}</h2>
+	      <div class="section-subtitle">${accommodation.catering.description}</div>
+	      <div class="section-grid catering-grid">
+	        ${cateringCards}
+	      </div>
+	      <div class="cta-row cta-row--single">
+	        <button class="btn btn--primary" data-nav=\"#/kitchen\">Выбрать тариф ${renderIcon("back", "icon--arrow")}</button>
+	      </div>
+	    </section>
+	    <div class="cta-panel">
       <div>
         <h2 class="section-title">Готовы обсудить детали?</h2>
         <div class="section-subtitle">Мы подберем формат размещения и ответим на вопросы.</div>
@@ -1096,11 +1134,11 @@ function renderServiceDetail(serviceId, query = new URLSearchParams()) {
             .map((master) => {
               const avatarPosition = master.avatarPosition ? ` style="object-position: ${master.avatarPosition};"` : "";
               const avatar = master.photos?.[0]
-                ? `<img src="${master.photos[0]}" alt="${master.name}"${avatarPosition} />`
+                ? `<img src="${withBuildVersion(master.photos[0])}" alt="${master.name}"${avatarPosition} />`
                 : `<span class="avatar__placeholder">${master.name.charAt(0)}</span>`;
               const tags = (master.tags || []).map((tag) => `<span class="master-chip">${tag}</span>`).join("");
               return `
-                <article class="master-card" data-nav="#/master/${master.id}">
+                <article class="master-card" data-nav="#/master/${master.id}" data-master-id="${master.id}">
                   <div class="avatar">${avatar}</div>
                   <div class="master-card__content">
                     <div class="master-card__header">
@@ -1272,8 +1310,9 @@ function renderBathDetail(service, query = new URLSearchParams()) {
   const masterTags = master?.tags?.length
     ? master.tags.map((tag) => `<span class="master-chip">${tag}</span>`).join("")
     : "";
+  const masterAvatarPosition = master?.avatarPosition ? ` style="object-position: ${master.avatarPosition};"` : "";
   const masterAvatar = master?.photos?.[0]
-    ? `<img src="${master.photos[0]}" alt="${master.name}" />`
+    ? `<img src="${withBuildVersion(master.photos[0])}" alt="${master.name}"${masterAvatarPosition} />`
     : `<span class="avatar__placeholder">${(master?.name || "М").charAt(0)}</span>`;
   const masterProfileRoute = master ? `#/master/${master.id}` : "#/contact";
   const masterQuestionRoute = master
@@ -1284,7 +1323,7 @@ function renderBathDetail(service, query = new URLSearchParams()) {
       <section class="section">
         <h2 class="section-title">${detail.masterTitle || `Мастер парения ${master.name}`}</h2>
         <div class="master-list">
-          <article class="master-card" data-nav="${masterProfileRoute}">
+          <article class="master-card" data-nav="${masterProfileRoute}" data-master-id="${master.id}">
             <div class="avatar">${masterAvatar}</div>
             <div class="master-card__content">
               <div class="master-card__header">
@@ -1407,7 +1446,7 @@ function renderMasters() {
     .map((master) => {
       const avatarPosition = master.avatarPosition ? ` style="object-position: ${master.avatarPosition};"` : "";
       const avatar = master.photos?.[0]
-        ? `<img src="${master.photos[0]}" alt="${master.name}"${avatarPosition} />`
+        ? `<img src="${withBuildVersion(master.photos[0])}" alt="${master.name}"${avatarPosition} />`
         : `<span class="avatar__placeholder">${master.name.charAt(0)}</span>`;
       const tags = (master.tags || []).map((tag) => `<span class="master-chip">${tag}</span>`).join("");
       const anchor = master.anchor || master.bioShort || "";
@@ -1477,6 +1516,7 @@ function renderMasterDetail(masterId, query = new URLSearchParams()) {
   }
 
   const heroImage = master.photos?.[0] || "";
+  const heroImageUrl = heroImage ? withBuildVersion(heroImage) : "";
   const aboutShort = master.bioSummary || master.bioShort || master.bioFull || "";
   const aboutFull = master.bioFull && master.bioFull !== aboutShort ? master.bioFull : "";
   const tags = (master.tags || []).map((tag) => `<span class="master-chip">${tag}</span>`).join("");
@@ -1555,7 +1595,7 @@ function renderMasterDetail(masterId, query = new URLSearchParams()) {
     : "";
 
   const content = `
-    <section class="master-hero ${heroImage ? "" : "master-hero--placeholder"}" data-master-id="${master.id}" ${heroImage ? `style="background-image: url('${heroImage}')"` : ""}>
+    <section class="master-hero ${heroImageUrl ? "" : "master-hero--placeholder"}" data-master-id="${master.id}" ${heroImageUrl ? `style="background-image: url('${heroImageUrl}')"` : ""}>
       <div class="master-hero__actions">
         <button class="btn btn--ghost btn--icon master-hero__action" type="button" data-share-master="${master.id}" data-share-title="${master.name}" data-share-text="Мастер: ${master.name}" aria-label="Поделиться">
           ${renderIcon("share")}
@@ -1566,7 +1606,7 @@ function renderMasterDetail(masterId, query = new URLSearchParams()) {
         <div class="master-hero__role">${master.role || ""}</div>
         ${tags ? `<div class="master-hero__tags">${tags}</div>` : ""}
       </div>
-      ${heroImage ? "" : `<div class="master-hero__placeholder">Фото мастера</div>`}
+      ${heroImageUrl ? "" : `<div class="master-hero__placeholder">Фото мастера</div>`}
     </section>
     <section class="card">
       <h2 class="section-title">О мастере</h2>
@@ -1827,26 +1867,35 @@ function renderKitchen() {
     <section class="card">
       <h3 class="card__title">Ориентировочный расчёт</h3>
       <div class="kitchen-calc">
-        <div class="field">
-          <label for="kitchenGuests">Количество участников</label>
-          <input id="kitchenGuests" name="guestsCount" type="number" min="1" placeholder="Например, 20" />
+        <div class="field field--floating">
+          <div class="field__control" data-field-control data-has-value="false">
+            <input id="kitchenGuests" name="guestsCount" type="number" min="1" placeholder=" " />
+            <label for="kitchenGuests">Количество участников</label>
+          </div>
+          <div class="hint">Например, 20</div>
         </div>
-        <div class="field">
-          <label for="kitchenFoodType">Тип питания</label>
-          <select id="kitchenFoodType" name="foodType">
-            <option value="">Выберите</option>
-            <option value="full">Комплекс</option>
-            <option value="twoMeals">2-разовое</option>
-            <option value="request">по запросу</option>
-          </select>
+        <div class="field field--floating">
+          <div class="field__control" data-field-control data-has-value="false">
+            <select id="kitchenFoodType" name="foodType">
+              <option value=""></option>
+              <option value="full">Комплекс</option>
+              <option value="twoMeals">2-разовое</option>
+              <option value="request">по запросу</option>
+            </select>
+            <label for="kitchenFoodType">Тип питания</label>
+          </div>
         </div>
-        <div class="field">
-          <label for="kitchenDateFrom">Даты (заезд)</label>
-          <input id="kitchenDateFrom" name="dateFrom" type="date" />
+        <div class="field field--floating">
+          <div class="field__control" data-field-control data-has-value="false">
+            <input id="kitchenDateFrom" name="dateFrom" type="date" placeholder=" " />
+            <label for="kitchenDateFrom">Даты (заезд)</label>
+          </div>
         </div>
-        <div class="field">
-          <label for="kitchenDateTo">Даты (выезд)</label>
-          <input id="kitchenDateTo" name="dateTo" type="date" />
+        <div class="field field--floating">
+          <div class="field__control" data-field-control data-has-value="false">
+            <input id="kitchenDateTo" name="dateTo" type="date" placeholder=" " />
+            <label for="kitchenDateTo">Даты (выезд)</label>
+          </div>
         </div>
         <div class="calc-output" id="kitchenCalcOutput">Введите данные, чтобы увидеть расчёт.</div>
       </div>
@@ -2025,10 +2074,7 @@ function renderEvents(query) {
     ${modal}
   `;
 
-  return {
-    ...renderShell({ content, activeTab: "events" }),
-    bind: bindEventCards
-  };
+  return renderShell({ content, activeTab: "events" });
 }
 
 function renderEventCard(event, index, options = {}) {
@@ -2071,19 +2117,18 @@ function renderEventCard(event, index, options = {}) {
 
   return `
     <article class="event-card ${themeClass}${isFeatured ? " event-card--featured" : ""} reveal" data-event-card data-event-id="${event.id}" style="--delay:${index * 40}ms">
-      <div class="event-card__actions">
-        <button class="event-card__action" type="button" data-event-save>Сохранить</button>
-        <button class="event-card__action event-card__action--share" type="button" data-share-event="${event.id}" data-share-title="${event.title}" data-share-text="${event.title}">
-          ${renderIcon("share")}
-          Поделиться
-        </button>
-      </div>
       <div class="card event-card__content">
         <div class="event-card__cover">
           ${coverMarkup}
         </div>
         <div class="event-card__body">
-          ${chips ? `<div class="event-card__chips">${chips}</div>` : ""}
+          <div class="event-card__header">
+            ${chips ? `<div class="event-card__chips">${chips}</div>` : "<div></div>"}
+            <button class="btn btn--ghost btn--small event-card__share" type="button" data-share-event="${event.id}" data-share-title="${event.title}" data-share-text="${event.title}" aria-label="Поделиться">
+              ${renderIcon("share")}
+              <span>Поделиться</span>
+            </button>
+          </div>
           <h3 class="event-card__title">${event.title}</h3>
           ${metaLine}
           ${highlight ? `<div class="event-card__highlight">${highlight}</div>` : ""}
@@ -2191,7 +2236,7 @@ function renderEventDetail(eventId) {
 
   const quickFactValues = {
     date: dateLabel || "по запросу",
-    location: event.location || "Алтай",
+    location: event.location || "Ко Панган",
     duration: durationLabel,
     hosts: hostsSummary || "Уточняется",
     format: event.formatShort || event.format || "",
@@ -2467,7 +2512,7 @@ function renderEventDetail(eventId) {
         </div>
         <div class="map-preview">
           <div class="map-preview__pin">${renderIcon("pin")}</div>
-          <div class="map-preview__label">${locationLabel || "Алтай"}</div>
+          <div class="map-preview__label">${locationLabel || "Ко Панган"}</div>
         </div>
         ${locationNote ? `<p class="card__text">${locationNote}</p>` : ""}
         ${mapUrl ? `<div class="event-location__actions"><a class="btn btn--ghost" href="${mapUrl}" target="_blank" rel="noopener">Открыть карту</a></div>` : ""}
@@ -2711,138 +2756,8 @@ function pluralizeDays(value) {
   return "дней";
 }
 
-function loadSavedEvents() {
-  try {
-    const raw = window.localStorage.getItem(SAVED_EVENTS_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return new Set(Array.isArray(parsed) ? parsed : []);
-  } catch (error) {
-    return new Set();
-  }
-}
-
-function saveSavedEvents(saved) {
-  try {
-    window.localStorage.setItem(SAVED_EVENTS_KEY, JSON.stringify([...saved]));
-  } catch (error) {
-    // Ignore storage errors.
-  }
-}
-
-function updateEventSaveButton(button, isSaved) {
-  if (!button) return;
-  const label = button.querySelector("[data-event-save-label]");
-  const text = isSaved ? "Сохранено" : "Сохранить";
-  if (label) {
-    label.textContent = text;
-  } else {
-    button.textContent = text;
-  }
-  button.setAttribute("aria-pressed", String(isSaved));
-}
-
-function bindEventCards() {
-  const savedEvents = loadSavedEvents();
-
-  document.querySelectorAll("[data-event-card]").forEach((card) => {
-    const eventId = card.getAttribute("data-event-id");
-    const saveButton = card.querySelector("[data-event-save]");
-    const isSaved = Boolean(eventId && savedEvents.has(eventId));
-
-    if (isSaved) {
-      card.classList.add("event-card--saved");
-    }
-    updateEventSaveButton(saveButton, isSaved);
-
-    if (saveButton) {
-      saveButton.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        if (!eventId) return;
-
-        const nextSaved = !card.classList.contains("event-card--saved");
-        card.classList.toggle("event-card--saved", nextSaved);
-        updateEventSaveButton(saveButton, nextSaved);
-
-        if (nextSaved) {
-          savedEvents.add(eventId);
-        } else {
-          savedEvents.delete(eventId);
-        }
-        saveSavedEvents(savedEvents);
-        card.classList.remove("event-card--swiped");
-      });
-    }
-
-    let startX = null;
-    let startY = null;
-    let isSwiping = false;
-
-    card.addEventListener("pointerdown", (event) => {
-      if (event.pointerType === "mouse" && event.button !== 0) return;
-      if (event.target.closest(".event-card__action")) return;
-      startX = event.clientX;
-      startY = event.clientY;
-      isSwiping = false;
-    });
-
-    card.addEventListener("pointermove", (event) => {
-      if (startX === null) return;
-      const deltaX = event.clientX - startX;
-      const deltaY = event.clientY - startY;
-      if (!isSwiping) {
-        if (Math.abs(deltaX) < 12 || Math.abs(deltaX) < Math.abs(deltaY)) {
-          return;
-        }
-        isSwiping = true;
-      }
-
-      if (deltaX < -30) {
-        card.classList.add("event-card--swiped");
-      } else if (deltaX > 30) {
-        card.classList.remove("event-card--swiped");
-      }
-    });
-
-    const resetSwipe = () => {
-      startX = null;
-      startY = null;
-      isSwiping = false;
-    };
-
-    card.addEventListener("pointerup", resetSwipe);
-    card.addEventListener("pointercancel", resetSwipe);
-  });
-}
-
 function bindEventDetail() {
   bindCarousels();
-  const detail = document.querySelector("[data-event-detail]");
-  if (!detail) return;
-
-  const eventId = detail.getAttribute("data-event-id");
-  const saveButton = detail.querySelector("[data-event-save]");
-  if (!eventId || !saveButton) return;
-
-  const savedEvents = loadSavedEvents();
-  const isSaved = savedEvents.has(eventId);
-  detail.classList.toggle("event-detail--saved", isSaved);
-  updateEventSaveButton(saveButton, isSaved);
-
-  saveButton.addEventListener("click", (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    const nextSaved = !detail.classList.contains("event-detail--saved");
-    detail.classList.toggle("event-detail--saved", nextSaved);
-    updateEventSaveButton(saveButton, nextSaved);
-
-    if (nextSaved) {
-      savedEvents.add(eventId);
-    } else {
-      savedEvents.delete(eventId);
-    }
-    saveSavedEvents(savedEvents);
-  });
 }
 
 function getEventDateParts(date) {
@@ -2882,7 +2797,7 @@ function renderContact() {
           ${renderIcon("pin")}
           <div>
             <div class="contact-card__label">Локация</div>
-            <div class="contact-card__value">${address || "Алтай"}</div>
+            <div class="contact-card__value">${address || "Ко Панган"}</div>
           </div>
         </div>
       </div>
@@ -3022,13 +2937,22 @@ function renderField(field, prefill, context) {
       )
       .join("");
 
+    const hint = field.hint
+      ? `<div class="hint">${field.hint}</div>`
+      : field.placeholder
+        ? `<div class="hint">${field.placeholder}</div>`
+        : "";
+
     return `
-      <div class="field">
-        <label for="${id}">${label}</label>
-        <select id="${id}" name="${field.id}">
-          <option value="">Выберите</option>
-          ${optionsMarkup}
-        </select>
+      <div class="field field--floating">
+        <div class="field__control" data-field-control data-has-value="${value ? "true" : "false"}">
+          <select id="${id}" name="${field.id}">
+            <option value=""></option>
+            ${optionsMarkup}
+          </select>
+          <label for="${id}">${label}</label>
+        </div>
+        ${hint}
       </div>
     `;
   }
@@ -3066,10 +2990,19 @@ function renderField(field, prefill, context) {
   }
 
   if (resolvedType === "textarea") {
+    const hint = field.hint
+      ? `<div class="hint">${field.hint}</div>`
+      : field.placeholder
+        ? `<div class="hint">${field.placeholder}</div>`
+        : "";
+
     return `
-      <div class="field">
-        <label for="${id}">${label}</label>
-        <textarea id="${id}" name="${field.id}" placeholder="${field.placeholder || ""}">${value || ""}</textarea>
+      <div class="field field--floating">
+        <div class="field__control" data-field-control data-has-value="${value ? "true" : "false"}">
+          <textarea id="${id}" name="${field.id}" placeholder=" ">${value || ""}</textarea>
+          <label for="${id}">${label}</label>
+        </div>
+        ${hint}
       </div>
     `;
   }
@@ -3124,11 +3057,19 @@ function renderField(field, prefill, context) {
 
   const inputType = resolvedType === "number" ? "number" : resolvedType || "text";
   const min = field.min ? `min="${field.min}"` : "";
+  const hint = field.hint
+    ? `<div class="hint">${field.hint}</div>`
+    : field.placeholder
+      ? `<div class="hint">${field.placeholder}</div>`
+      : "";
 
   return `
-    <div class="field">
-      <label for="${id}">${label}</label>
-      <input id="${id}" name="${field.id}" type="${inputType}" ${min} value="${value || ""}" placeholder="${field.placeholder || ""}" />
+    <div class="field field--floating">
+      <div class="field__control" data-field-control data-has-value="${value ? "true" : "false"}">
+        <input id="${id}" name="${field.id}" type="${inputType}" ${min} value="${value || ""}" placeholder=" " />
+        <label for="${id}">${label}</label>
+      </div>
+      ${hint}
     </div>
   `;
 }
@@ -3203,6 +3144,34 @@ function bindNavigation() {
         window.location.hash = target.replace(/^#/, "");
       }
     });
+  });
+}
+
+function bindFloatingControls() {
+  document.querySelectorAll("[data-field-control]").forEach((control) => {
+    const input = control.querySelector("input, select, textarea");
+    if (!input) return;
+
+    const update = () => {
+      const hasValue = Boolean(input.value);
+      control.setAttribute("data-has-value", hasValue ? "true" : "false");
+    };
+
+    update();
+    input.addEventListener("input", update);
+    input.addEventListener("change", update);
+    input.addEventListener("blur", update);
+  });
+}
+
+function bindAutoplayVideos() {
+  document.querySelectorAll("video[data-autoplay-video]").forEach((node) => {
+    if (!(node instanceof HTMLVideoElement)) return;
+    node.muted = true;
+    node.loop = true;
+    const attempt = () => node.play().catch(() => {});
+    attempt();
+    node.addEventListener("loadedmetadata", attempt, { once: true });
   });
 }
 

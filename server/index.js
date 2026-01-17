@@ -143,7 +143,16 @@ app.get("/api/media", async (req, res) => {
   }
 });
 
-app.use(express.static(ROOT_DIR));
+app.use(
+  express.static(ROOT_DIR, {
+    setHeaders: (res, filePath) => {
+      const ext = path.extname(filePath).toLowerCase();
+      if ([".html", ".js", ".css", ".json"].includes(ext)) {
+        res.setHeader("Cache-Control", "no-store");
+      }
+    }
+  })
+);
 
 app.listen(config.port, () => {
   console.log(`Server running on http://localhost:${config.port}`);

@@ -312,6 +312,7 @@
         "instagram": "",
         "website": ""
       },
+      "avatarPosition": "center 10%",
       "photos": [
         "assets/masters/svetlana-zubareva.jpg"
       ],
@@ -408,9 +409,9 @@
         }
       ]
     },
-    {
-      "id": "daniil-sound",
-      "name": "Даниил",
+  {
+    "id": "daniil-sound",
+    "name": "Даниил",
       "role": "Проводник в тишину и звук",
       "bioShort": "Мастер звукотерапии и вибрационных практик. Помогает мягко расслабиться и восстановить баланс.",
       "bioSummary": "Мастер звукотерапии и вибрационных практик. Работает с целительным воздействием звука и вибрации, помогая телу и нервной системе мягко расслабиться и выйти в состояние тишины.",
@@ -428,10 +429,10 @@
         "instagram": "",
         "website": ""
       },
-      "avatarPosition": "center 70%",
-      "photos": [
-        "assets/masters/daniil-sound.jpg"
-      ],
+    "avatarPosition": "center 45%",
+    "photos": [
+      "assets/masters/daniil-sound.jpg"
+    ],
       "benefits": [
         {
           "title": "Глубокое расслабление тела и ума",

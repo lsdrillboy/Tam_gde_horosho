@@ -1,8 +1,10 @@
 node_modules/
+.DS_Store
 .env
 logs/requests.log
 logs/*.out
 backend/.env
 Tam_gde_horosho/
+DragonSoul/
 assets/gallery/rooms/townhouse/VID_20250704_164738.mp4
 assets/gallery/rooms/cabins/InShot_20250707_174359956.mp4
